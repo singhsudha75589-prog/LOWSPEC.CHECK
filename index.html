@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "zdkrskukhp");
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Can Your PC Run It? — Low-Spec Reality Check</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#0b0f19',
+            panel: '#111827',
+            panelBorder: '#1f2937',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Subtle hardware-benchmark grid background */
+    body {
+      background-color: #0b0f19;
+      background-image: 
+        linear-gradient(to right, rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+      color: #f3f4f6;
+      overflow-x: hidden;
+    }
+
+    /* Custom radio option styling */
+    .spec-option input:checked + .spec-card {
+      border-color: #06b6d4;
+      background: linear-gradient(145deg, rgba(6, 182, 212, 0.14), rgba(17, 24, 39, 0.95));
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+    }
+
+    .spec-option input:checked + .spec-card .radio-dot {
+      border-color: #06b6d4;
+      background-color: #06b6d4;
+      box-shadow: 0 0 8px #06b6d4;
+    }
+
+    /* Scan bar animation */
+    @keyframes scanline {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+    .animate-scan {
+      animation: scanline 0.7s ease-in-out infinite;
+    }
+
+    /* Smooth gauge transition */
+    .gauge-progress {
+      transition: stroke-dashoffset 0.85s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.4s ease;
+    }
+
+    /* Custom sleek scrollbar for searchable hardware dropdowns */
+    .hw-dropdown-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .hw-dropdown-scroll::-webkit-scrollbar-track {
+      background: #0b0f19;
+      border-radius: 8px;
+    }
+    .hw-dropdown-scroll::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 8px;
+    }
+    .hw-dropdown-scroll::-webkit-scrollbar-thumb:hover {
+      background: #06b6d4;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-gray-800/80 bg-[#0b0f19]/90 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-lg shadow-cyan-500/10">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <rect x="9" y="9" width="6" height="6"></rect>
+            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"></path>
+          </svg>
+        </div>
+        <div>
+          <span class="font-bold tracking-tight text-white text-base sm:text-lg">LOWSPEC<span class="text-cyan-400">.CHECK</span></span>
+          <span class="hidden sm:inline-block ml-2 text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">Reality Engine v2.0</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Auto-Detect GPU Pill Button -->
+        <button id="detectGpuBtn" onclick="autoDetectGPU()" class="text-xs font-mono font-semibold px-3 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/35 transition flex items-center gap-1.5 cursor-pointer shadow-sm">
+          <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span id="detectGpuLabel">Auto-Detect GPU</span>
+        </button>
+
+        <!-- DONATION_BUTTON_SLOT: Uncomment the <a> block below and paste your BuyMeACoffee / Ko-fi / Razorpay link whenever ready -->
+        <!--
+        <a href="https://buymeacoffee.com/yourhandle" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/35 transition flex items-center gap-1.5">
+          <span>☕ Support Tool</span>
+        </a>
+        -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+    <!-- Hero Title Section -->
+    <section class="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-mono mb-4">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        SCENE-AWARE FPS &amp; FRAME-TIME SIMULATOR
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-3 leading-tight">
+        Can Your PC <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">Actually</span> Run It?
+      </h1>
+      <p class="text-gray-400 text-sm sm:text-base leading-relaxed">
+        Select your hardware and <strong class="text-gray-200">exact scene complexity</strong>—from lightweight sub-1M triangle viewports to full Lumen open-worlds—to calculate real FPS, frame-time budgets, and bottlenecks.
+      </p>
+    </section>
+
+    <!-- AD_BANNER_SLOT: Paste your Google AdSense <ins> tag or Sponsor Banner HTML directly below this line -->
+
+    <!-- Detected Hardware Banner (Revealed automatically when user clicks Auto-Detect GPU) -->
+    <div id="detectedGpuBanner" class="hidden mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/25 px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
+      <div class="flex items-center gap-2.5 text-emerald-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>Detected Renderer: <strong id="detectedGpuText" class="font-mono text-white">Scanning...</strong></span>
+      </div>
+      <span id="detectedTierBadge" class="font-mono text-[11px] px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Tier Matched</span>
+    </div>
+
+    <!-- Main 2-Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+
+      <!-- LEFT COLUMN: Interactive Hardware & Scene Configurator -->
+      <div class="lg:col-span-7 space-y-6 bg-gray-900/70 border border-gray-800 rounded-2xl p-5 sm:p-6 shadow-xl">
+
+        <!-- Step 1: Searchable CPU Selector -->
+        <div class="relative" id="cpuPickerContainer">
+          <label for="cpuSearchInput" class="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-gray-400 mb-2">
+            <span>01. Processor (Search 100+ Desktop &amp; Laptop CPUs)</span>
+            <span id="cpuBadgePill" class="text-cyan-400 font-bold">6C / 12T • Mid-Range</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="cpuSearchInput"
+              autocomplete="off"
+              placeholder="Type CPU (e.g. 5600X, 12400F, 9800X3D, 7120U, Core Ultra 7)..."
+              onfocus="openHwDropdown('cpu')"
+              oninput="filterHwDropdown('cpu', this.value)"
+              class="w-full rounded-xl bg-gray-950 border border-gray-700 hover:border-gray-600 focus:border-cyan-400 text-white text-sm pl-10 pr-20 py-3 focus:outline-none transition font-medium"
+            />
+            <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1">
+              <button type="button" onclick="clearHwSearch('cpu')" title="Clear & browse all CPUs" class="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+              <button type="button" onclick="toggleHwDropdown('cpu')" title="Toggle CPU list" class="p-1.5 text-gray-400 hover:text-cyan-400 rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="mt-1.5 flex items-center justify-between text-[11px] text-gray-400 px-1">
+            <span>Selected: <strong id="selectedCpuDisplay" class="text-gray-200">AMD Ryzen 5 5600X</strong></span>
+            <span id="selectedCpuScoreTag" class="font-mono text-cyan-400">Benchmark Index: 76/100</span>
+          </div>
+
+          <!-- Dropdown List -->
+          <div id="cpuDropdownMenu" class="hidden absolute z-40 left-0 right-0 mt-1.5 max-h-72 overflow-y-auto hw-dropdown-scroll rounded-xl bg-gray-950 border border-gray-700 shadow-2xl shadow-black/80 divide-y divide-gray-800/60">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- Step 2: Searchable GPU Selector -->
+        <div class="relative" id="gpuPickerContainer">
+          <label for="gpuSearchInput" class="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-gray-400 mb-2">
+            <span>02. Graphics Card / iGPU (Search 105+ GPUs)</span>
+            <span id="gpuBadgePill" class="text-cyan-400 font-bold">8GB VRAM • Mid-Range</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="gpuSearchInput"
+              autocomplete="off"
+              placeholder="Type GPU (e.g. RTX 3050, GTX 1650, RX 6600, 5070, Iris Xe, 780M)..."
+              onfocus="openHwDropdown('gpu')"
+              oninput="filterHwDropdown('gpu', this.value)"
+              class="w-full rounded-xl bg-gray-950 border border-gray-700 hover:border-gray-600 focus:border-cyan-400 text-white text-sm pl-10 pr-20 py-3 focus:outline-none transition font-medium"
+            />
+            <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1">
+              <button type="button" onclick="clearHwSearch('gpu')" title="Clear & browse all GPUs" class="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+              <button type="button" onclick="toggleHwDropdown('gpu')" title="Toggle GPU list" class="p-1.5 text-gray-400 hover:text-cyan-400 rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="mt-1.5 flex items-center justify-between text-[11px] text-gray-400 px-1">
+            <span>Selected: <strong id="selectedGpuDisplay" class="text-gray-200">NVIDIA GeForce RTX 3050 8GB</strong></span>
+            <span id="selectedGpuScoreTag" class="font-mono text-cyan-400">Benchmark Index: 56/100</span>
+          </div>
+
+          <!-- Dropdown List -->
+          <div id="gpuDropdownMenu" class="hidden absolute z-40 left-0 right-0 mt-1.5 max-h-72 overflow-y-auto hw-dropdown-scroll rounded-xl bg-gray-950 border border-gray-700 shadow-2xl shadow-black/80 divide-y divide-gray-800/60">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- Step 3: RAM Capacity, Memory Channel & Storage Drive -->
+        <div class="space-y-4">
+          <div>
+            <label class="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-gray-400 mb-2.5">
+              <span>03. System RAM Capacity</span>
+              <span class="text-cyan-400">Memory Pool</span>
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <label class="spec-option cursor-pointer">
+                <input type="radio" name="ram" value="4" class="sr-only">
+                <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 text-center transition hover:border-gray-700">
+                  <div class="text-xs font-extrabold text-white">4 GB</div>
+                  <div class="text-[10px] text-gray-400 mt-0.5">Ultra-Low</div>
+                </div>
+              </label>
+
+              <label class="spec-option cursor-pointer">
+                <input type="radio" name="ram" value="8" class="sr-only">
+                <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 text-center transition hover:border-gray-700">
+                  <div class="text-xs font-extrabold text-white">8 GB</div>
+                  <div class="text-[10px] text-gray-400 mt-0.5">Entry</div>
+                </div>
+              </label>
+
+              <label class="spec-option cursor-pointer">
+                <input type="radio" name="ram" value="16" class="sr-only" checked>
+                <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 text-center transition hover:border-gray-700">
+                  <div class="text-xs font-extrabold text-white">16 GB</div>
+                  <div class="text-[10px] text-gray-400 mt-0.5">Standard</div>
+                </div>
+              </label>
+
+              <label class="spec-option cursor-pointer">
+                <input type="radio" name="ram" value="32" class="sr-only">
+                <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 text-center transition hover:border-gray-700">
+                  <div class="text-xs font-extrabold text-white">32 GB</div>
+                  <div class="text-[10px] text-gray-400 mt-0.5">Creator</div>
+                </div>
+              </label>
+
+              <label class="spec-option cursor-pointer col-span-2 sm:col-span-1">
+                <input type="radio" name="ram" value="64" class="sr-only">
+                <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 text-center transition hover:border-gray-700">
+                  <div class="text-xs font-extrabold text-white">64 GB+</div>
+                  <div class="text-[10px] text-gray-400 mt-0.5">Workstation</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Memory Channel Mode & Primary Storage Drive -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- Memory Channel Mode -->
+            <div>
+              <label class="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-gray-400 mb-2">
+                <span>Memory Channel Mode</span>
+                <span class="text-cyan-400">Bandwidth</span>
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="spec-option cursor-pointer">
+                  <input type="radio" name="ramChannel" value="single" class="sr-only">
+                  <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 transition hover:border-gray-700">
+                    <div class="flex items-center gap-1.5">
+                      <span class="radio-dot w-3 h-3 rounded-full border-2 border-gray-600 shrink-0 transition"></span>
+                      <span class="text-xs font-bold text-white">Single (1x)</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 mt-0.5 pl-4">Half Bus Width</div>
+                  </div>
+                </label>
+
+                <label class="spec-option cursor-pointer">
+                  <input type="radio" name="ramChannel" value="dual" class="sr-only" checked>
+                  <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 transition hover:border-gray-700">
+                    <div class="flex items-center gap-1.5">
+                      <span class="radio-dot w-3 h-3 rounded-full border-2 border-gray-600 shrink-0 transition"></span>
+                      <span class="text-xs font-bold text-white">Dual (2x)</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 mt-0.5 pl-4">Full Bandwidth</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Primary Storage Drive -->
+            <div>
+              <label class="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-gray-400 mb-2">
+                <span>Primary Storage Drive</span>
+                <span class="text-emerald-400">Streaming</span>
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="spec-option cursor-pointer">
+                  <input type="radio" name="storageType" value="hdd" class="sr-only">
+                  <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 transition hover:border-gray-700">
+                    <div class="flex items-center gap-1.5">
+                      <span class="radio-dot w-3 h-3 rounded-full border-2 border-gray-600 shrink-0 transition"></span>
+                      <span class="text-xs font-bold text-white">HDD</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 mt-0.5 pl-4">1% Low Stutter</div>
+                  </div>
+                </label>
+
+                <label class="spec-option cursor-pointer">
+                  <input type="radio" name="storageType" value="ssd" class="sr-only" checked>
+                  <div class="spec-card rounded-xl border border-gray-800 bg-gray-950/60 p-2.5 transition hover:border-gray-700">
+                    <div class="flex items-center gap-1.5">
+                      <span class="radio-dot w-3 h-3 rounded-full border-2 border-gray-600 shrink-0 transition"></span>
+                      <span class="text-xs font-bold text-white">SSD / NVMe</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 mt-0.5 pl-4">Fast Asset Load</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Searchable Game / Engine Benchmark Database (65+ Titles) -->
+        <div class="relative" id="gamePickerContainer">
+          <label for="gameSearchInput" class="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-gray-400 mb-2">
+            <span>04. Target Game / Engine (Search 65+ Benchmarks)</span>
+            <span id="gameBadgePill" class="text-emerald-400 font-bold">Heavy AAA • RT Capable</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                <path d="M6 12h4M8 10v4M15 13h.01M18 11h.01"></path>
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="gameSearchInput"
+              autocomplete="off"
+              placeholder="Search game or engine (e.g. Cyberpunk 2077, GTA VI, CS2, UE5, RDR2, Wukong)..."
+              onfocus="openHwDropdown('game')"
+              oninput="filterHwDropdown('game', this.value)"
+              class="w-full rounded-xl bg-gray-950 border border-gray-700 hover:border-gray-600 focus:border-emerald-400 text-white text-sm pl-10 pr-20 py-3 focus:outline-none transition font-medium"
+            />
+            <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1">
+              <button type="button" onclick="clearHwSearch('game')" title="Clear & browse all games" class="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+              <button type="button" onclick="toggleHwDropdown('game')" title="Toggle Game list" class="p-1.5 text-gray-400 hover:text-emerald-400 rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="mt-1.5 flex items-center justify-between text-[11px] text-gray-400 px-1">
+            <span>Selected: <strong id="selectedGameDisplay" class="text-gray-200">Cyberpunk 2077 (2.2 / Phantom Liberty)</strong></span>
+            <span id="selectedGameWeightTag" class="font-mono text-emerald-400">Demand Tier: Very Heavy</span>
+          </div>
+
+          <!-- Game Dropdown List -->
+          <div id="gameDropdownMenu" class="hidden absolute z-40 left-0 right-0 mt-1.5 max-h-72 overflow-y-auto hw-dropdown-scroll rounded-xl bg-gray-950 border border-gray-700 shadow-2xl shadow-black/80 divide-y divide-gray-800/60">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- Step 5: Graphics Quality Preset (Low to Ultra) & Upscaling Mode -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+          <div class="sm:col-span-6">
+            <label class="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-gray-400 mb-2">
+              <span>05. Graphics Preset</span>
+              <span class="text-cyan-400">Quality</span>
+            </label>
+            <div class="grid grid-cols-4 gap-1 bg-gray-950 p-1 rounded-xl border border-gray-800">
+              <button type="button" data-preset="low" onclick="setPreset('low')" class="preset-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Low</button>
+              <button type="button" data-preset="medium" onclick="setPreset('medium')" class="preset-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Medium</button>
+              <button type="button" data-preset="high" onclick="setPreset('high')" class="preset-btn text-[11px] font-mono font-bold py-2 rounded-lg bg-cyan-500 text-gray-950 transition cursor-pointer">High</button>
+              <button type="button" data-preset="ultra" onclick="setPreset('ultra')" class="preset-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Ultra</button>
+            </div>
+          </div>
+
+          <div class="sm:col-span-6">
+            <label class="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-gray-400 mb-2">
+              <span>06. DLSS / FSR / TSR</span>
+              <span class="text-emerald-400">Upscaler</span>
+            </label>
+            <div class="grid grid-cols-4 gap-1 bg-gray-950 p-1 rounded-xl border border-gray-800">
+              <button type="button" data-upscale="native" onclick="setUpscaling('native')" class="upscale-btn text-[11px] font-mono font-bold py-2 rounded-lg bg-emerald-500 text-gray-950 transition cursor-pointer">Native</button>
+              <button type="button" data-upscale="quality" onclick="setUpscaling('quality')" class="upscale-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Quality</button>
+              <button type="button" data-upscale="balanced" onclick="setUpscaling('balanced')" class="upscale-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Bal.</button>
+              <button type="button" data-upscale="performance" onclick="setUpscaling('performance')" class="upscale-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Perf.</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 6: Target Resolution & System Thermal / Power Profile -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 pt-2 border-t border-gray-800/80">
+          <div class="sm:col-span-6">
+            <label class="block text-xs font-mono uppercase tracking-wider text-gray-400 mb-2">
+              07. Target Resolution
+            </label>
+            <div class="grid grid-cols-5 gap-1 bg-gray-950 p-1 rounded-xl border border-gray-800">
+              <button type="button" data-res="720p" onclick="setResolution('720p')" class="res-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">720p</button>
+              <button type="button" data-res="900p" onclick="setResolution('900p')" class="res-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">900p</button>
+              <button type="button" data-res="1080p" onclick="setResolution('1080p')" class="res-btn text-[11px] font-mono font-bold py-2 rounded-lg bg-cyan-500 text-gray-950 transition cursor-pointer">1080p</button>
+              <button type="button" data-res="1440p" onclick="setResolution('1440p')" class="res-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">1440p</button>
+              <button type="button" data-res="4K" onclick="setResolution('4K')" class="res-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">4K</button>
+            </div>
+          </div>
+
+          <div class="sm:col-span-6">
+            <label class="block text-xs font-mono uppercase tracking-wider text-gray-400 mb-2">
+              08. Thermal / Power Envelope
+            </label>
+            <div class="grid grid-cols-3 gap-1 bg-gray-950 p-1 rounded-xl border border-gray-800">
+              <button type="button" data-thermal="desktop" onclick="setThermal('desktop')" class="thermal-btn text-[11px] font-mono font-bold py-2 rounded-lg bg-cyan-500 text-gray-950 transition cursor-pointer">Desktop</button>
+              <button type="button" data-thermal="gaming_laptop" onclick="setThermal('gaming_laptop')" class="thermal-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Gaming Lap</button>
+              <button type="button" data-thermal="thin_light" onclick="setThermal('thin_light')" class="thermal-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Thin &amp; Light</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Run Reality Check CTA Button -->
+        <button id="runCheckBtn" onclick="runRealityCheck()" class="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-gray-950 font-extrabold text-base py-4 px-6 shadow-lg shadow-cyan-500/20 active:scale-[0.99] transition flex items-center justify-center gap-2.5 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span id="btnLabel">RUN REALITY CHECK</span>
+          <div id="scanOverlay" class="hidden absolute inset-0 bg-white/30 w-1/2 skew-x-12 animate-scan"></div>
+        </button>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Diagnostic Output, Frame-Time Budget, Rig Compare & Upgrade Fix -->
+      <div class="lg:col-span-5 space-y-6">
+
+        <!-- Main Result Card -->
+        <div id="resultCard" class="rounded-2xl border border-gray-800 bg-gray-900/90 p-5 sm:p-6 shadow-2xl relative overflow-hidden">
+          <!-- Top Accent Line -->
+          <div id="verdictTopBar" class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-cyan-400 to-emerald-400"></div>
+
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-mono uppercase tracking-wider text-gray-400">Diagnostic Output</span>
+            <span id="resolutionBadge" class="text-xs font-mono px-2.5 py-1 rounded-md bg-gray-800 text-cyan-300 border border-gray-700">1080p • Lightweight</span>
+          </div>
+
+          <!-- Score Gauge + Verdict Header -->
+          <div class="flex items-center gap-5 mb-5">
+            <div class="relative w-24 h-24 shrink-0 flex items-center justify-center">
+              <svg class="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" stroke="#1f2937" stroke-width="10" fill="none" />
+                <circle id="gaugeCircle" class="gauge-progress" cx="50" cy="50" r="42" stroke="#06b6d4" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="263.89" stroke-dashoffset="30" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="scoreNumber" class="font-mono text-2xl font-extrabold text-white leading-none">88</span>
+                <span class="text-[10px] font-mono text-gray-400 mt-0.5">/ 100</span>
+              </div>
+            </div>
+
+            <div>
+              <div id="verdictBadge" class="inline-block text-xs font-mono font-bold uppercase px-2.5 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 mb-1.5">
+                120 FPS Locked
+              </div>
+              <h2 id="verdictTitle" class="text-xl sm:text-2xl font-extrabold text-white leading-snug">
+                115–135 FPS (Smooth)
+              </h2>
+              <p id="verdictSubtitle" class="text-xs text-gray-400 mt-1">
+                Optimal frame pacing for low-poly and sub-1M triangle scenes.
+              </p>
+            </div>
+          </div>
+
+          <!-- Key Telemetry Boxes -->
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <div class="rounded-xl bg-gray-950/80 border border-gray-800 p-3">
+              <div class="text-[11px] font-mono text-gray-400 uppercase">Estimated FPS</div>
+              <div id="fpsStat" class="font-mono text-base sm:text-lg font-bold text-cyan-400 mt-0.5">115 – 135 FPS</div>
+            </div>
+            <div class="rounded-xl bg-gray-950/80 border border-gray-800 p-3">
+              <div class="text-[11px] font-mono text-gray-400 uppercase">Primary Bottleneck</div>
+              <div id="bottleneckStat" class="font-mono text-sm sm:text-base font-bold text-emerald-400 mt-0.5 truncate">Well Balanced</div>
+            </div>
+          </div>
+
+          <!-- Frame-Time Budget Visualizer (8.3ms vs 16.6ms vs 33.3ms) -->
+          <div class="rounded-xl bg-gray-950/80 border border-gray-800 p-3.5 mb-5">
+            <div class="flex items-center justify-between text-xs font-mono mb-2">
+              <span class="text-gray-400">FRAME-TIME BUDGET</span>
+              <span id="frameTimeStat" class="font-bold text-emerald-400">8.1 ms / frame</span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-800 rounded-full overflow-hidden relative">
+              <div id="frameTimeBar" class="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full transition-all duration-500" style="width: 28%;"></div>
+            </div>
+            <div class="flex justify-between text-[10px] font-mono text-gray-500 mt-1.5">
+              <span>8.3ms (120 FPS)</span>
+              <span>16.6ms (60 FPS)</span>
+              <span>33.3ms (30 FPS)</span>
+            </div>
+          </div>
+
+          <!-- 3 Custom Optimization Tweaks -->
+          <div class="mb-5">
+            <h3 class="text-xs font-mono uppercase tracking-wider text-gray-300 mb-2.5 flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              Actionable Optimization Tweaks
+            </h3>
+            <ul id="tweaksList" class="space-y-2 text-xs text-gray-300 leading-relaxed">
+              <!-- Populated dynamically via JS -->
+            </ul>
+          </div>
+
+          <!-- Action Buttons: Copy Report, Download PNG Badge & Save Rig -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button onclick="copyShareResult()" class="rounded-xl bg-gray-800 hover:bg-gray-750 border border-gray-700 hover:border-cyan-500/50 text-white font-semibold text-xs py-3 px-3 transition flex items-center justify-center gap-1.5 cursor-pointer">
+              <svg class="w-4 h-4 text-cyan-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy Text</span>
+            </button>
+
+            <button onclick="downloadPngCard()" class="rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/35 text-emerald-300 font-semibold text-xs py-3 px-3 transition flex items-center justify-center gap-1.5 cursor-pointer">
+              <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>PNG Card</span>
+            </button>
+
+            <button onclick="saveCurrentRig()" class="rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/35 text-cyan-300 font-semibold text-xs py-3 px-3 transition flex items-center justify-center gap-1.5 cursor-pointer">
+              <svg class="w-4 h-4 text-cyan-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span>Save Rig</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Side-by-Side Saved Rigs Comparison Drawer -->
+        <div id="compareSection" class="rounded-2xl border border-gray-800 bg-gray-900/80 p-5 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-xs font-mono uppercase tracking-wider text-gray-300 font-bold flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              Saved Rig Comparison (Max 2)
+            </h4>
+            <button id="clearRigsBtn" onclick="clearSavedRigs()" class="hidden text-[11px] font-mono text-gray-500 hover:text-rose-400 transition cursor-pointer">
+              Clear All
+            </button>
+          </div>
+          <div id="savedRigsContainer" class="text-xs text-gray-500">
+            Save your current build and a friend's laptop (or an upgrade target) to compare FPS side-by-side.
+          </div>
+        </div>
+
+        <!-- Smart Upgrade Recommendation Card (Wired to AFFILIATE_LINKS in script) -->
+        <div class="rounded-2xl border border-cyan-500/25 bg-gradient-to-b from-cyan-950/20 to-gray-900/90 p-5 shadow-lg">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-bold">Recommended Hardware Fix</span>
+          </div>
+          <h4 id="upgradeTitle" class="text-base font-bold text-white mb-1">
+            Optimize Your View: 144Hz+ High-Refresh Display
+          </h4>
+          <p id="upgradeDesc" class="text-xs text-gray-400 leading-relaxed mb-4">
+            Your rig pushes 115+ FPS easily! Pair it with a fast 144Hz+ IPS monitor so you actually see every frame in your viewport and games.
+          </p>
+          <a id="upgradeLink" href="https://www.amazon.in/s?k=144hz+gaming+monitor" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 font-semibold text-xs sm:text-sm py-2.5 px-4 transition">
+            <span id="upgradeBtnText">Check Top Budget 144Hz+ Monitors &rarr;</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Clean Launch Footer -->
+  <footer class="border-t border-gray-800/80 py-6 mt-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+      <p>LOWSPEC.CHECK — Scene-aware hardware &amp; frame-time estimator. 100% browser-based, zero data uploaded.</p>
+      <span class="font-mono text-gray-600">Built for Gamers &amp; Indie Devs</span>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="rounded-xl bg-emerald-500 text-gray-950 font-bold text-xs sm:text-sm px-4 py-3 shadow-2xl flex items-center gap-2">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script>
+    /**
+     * ============================================================================
+     * MONETIZATION & SMART TIERED UPGRADE ENGINE
+     * Set your Amazon Associates tag once in AFFILIATE_TAG (e.g., "yourtag-21")
+     * ============================================================================
+     */
+    const AFFILIATE_TAG = ""; // Optional: Paste your Amazon Associates tracking ID here (e.g. "lowspeccheck-21")
+
+    function buildAmazonSearchUrl(query) {
+      const base = `https://www.amazon.in/s?k=${encodeURIComponent(query)}`;
+      return AFFILIATE_TAG ? `${base}&tag=${encodeURIComponent(AFFILIATE_TAG)}` : base;
+    }
+
+    /**
+     * Picks the exact next-tier GPU or CPU upgrade based on the user's current hardware
+     * so low-end users get budget recommendations and mid-range users get true upgrades.
+     */
+    function getSmartUpgradeRecommendation(bottleneckType, currentGpu, currentCpu, ramGb, isSingleChannel, isHdd) {
+      if (bottleneckType === "gpu") {
+        // Recommend the ideal next-tier GPU that pairs well with their current CPU
+        if (currentGpu.score < 46) {
+          return {
+            title: "Best Value GPU Upgrade: AMD RX 6600 8GB / RTX 3060 12GB",
+            desc: `Moving from ${currentGpu.name} to an RX 6600 or RTX 3060 12GB doubles your frame rate without overloading your current CPU or power supply.`,
+            btnText: "Check RX 6600 & RTX 3060 Prices on Amazon →",
+            url: buildAmazonSearchUrl("RX 6600 8GB RTX 3060 12GB graphics card")
+          };
+        } else if (currentGpu.score < 66) {
+          return {
+            title: "Best Sweet-Spot Upgrade: RTX 4060 8GB / Intel Arc B580 12GB",
+            desc: `Upgrading from ${currentGpu.name} to an RTX 4060 (with DLSS 3) or Arc B580 12GB unlocks smooth 60–90+ FPS at 1080p High/Ultra.`,
+            btnText: "Check RTX 4060 & Arc B580 Deals →",
+            url: buildAmazonSearchUrl("RTX 4060 8GB Intel Arc B580 graphics card")
+          };
+        } else if (currentGpu.score < 82) {
+          return {
+            title: "1440p & High-VRAM Upgrade: RTX 5060 Ti 16GB / RX 9060 XT 16GB",
+            desc: `To step up noticeably from ${currentGpu.name}, target a 16GB card like the RTX 5060 Ti 16GB or RX 9060 XT 16GB for heavy UE5 & AAA textures.`,
+            btnText: "Compare 16GB Mid-High GPUs →",
+            url: buildAmazonSearchUrl("RTX 5060 Ti 16GB RX 9060 XT 16GB graphics card")
+          };
+        } else {
+          return {
+            title: "Enthusiast 4K Upgrade: RTX 5070 Ti 16GB / RX 9070 XT",
+            desc: `You already own a strong GPU (${currentGpu.name}). Only a flagship jump to an RTX 5070 Ti or RX 9070 XT delivers a meaningful uplift.`,
+            btnText: "View RTX 5070 Ti & RX 9070 XT Cards →",
+            url: buildAmazonSearchUrl("RTX 5070 Ti RX 9070 XT graphics card")
+          };
+        }
+      }
+
+      if (bottleneckType === "cpu") {
+        if (currentCpu.score < 62) {
+          return {
+            title: "Best Budget CPU Upgrade: Ryzen 5 5600 / Intel Core i5-12400F",
+            desc: `Your ${currentCpu.name} is holding back frame pacing. Stepping up to a 6-core Ryzen 5 5600 or i5-12400F eliminates stutters affordably.`,
+            btnText: "Check Ryzen 5 5600 & i5-12400F Prices →",
+            url: buildAmazonSearchUrl("AMD Ryzen 5 5600 Intel Core i5 12400F processor")
+          };
+        } else if (currentCpu.score < 82) {
+          return {
+            title: "High-IPC Gaming Upgrade: Ryzen 7 5700X3D / Ryzen 5 7600",
+            desc: `Upgrading from ${currentCpu.name} to a 3D V-Cache Ryzen 7 5700X3D (AM4) or Ryzen 5 7600 (AM5) dramatically boosts 1% low FPS in CPU-heavy games.`,
+            btnText: "Check Ryzen 7 5700X3D & Ryzen 5 7600 →",
+            url: buildAmazonSearchUrl("AMD Ryzen 7 5700X3D Ryzen 5 7600 processor")
+          };
+        } else {
+          return {
+            title: "Flagship Gaming CPU: AMD Ryzen 7 9800X3D / 7800X3D",
+            desc: `To push past ${currentCpu.name} in competitive shooters and heavy simulations, AMD's X3D processors lead the charts.`,
+            btnText: "Check Ryzen 7 9800X3D / 7800X3D →",
+            url: buildAmazonSearchUrl("AMD Ryzen 7 9800X3D 7800X3D processor")
+          };
+        }
+      }
+
+      if (bottleneckType === "ram") {
+        if (isHdd && !isSingleChannel && ramGb >= 16) {
+          return {
+            title: "Storage Bottleneck Fix: 1TB PCIe NVMe M.2 SSD",
+            desc: "Your RAM capacity is solid, but running modern games from a mechanical HDD causes texture pop-in and traversal stutters. Move games to an NVMe SSD.",
+            btnText: "Check Top 1TB NVMe SSD Deals →",
+            url: buildAmazonSearchUrl("1TB NVMe M.2 internal SSD")
+          };
+        }
+        return {
+          title: isSingleChannel
+            ? `Dual-Channel Fix: Add a Matching ${ramGb}GB RAM Stick`
+            : "Memory & Storage Fix: 16GB/32GB Dual-Channel Kit + NVMe SSD",
+          desc: isSingleChannel
+            ? `Running ${ramGb}GB in Single-Channel cuts memory bandwidth in half. Adding a second matching stick unlocks +15% to +30% FPS immediately.`
+            : `Upgrading past ${ramGb}GB RAM (and moving off any HDD) stops out-of-memory crashes and micro-stutters.`,
+          btnText: "Browse DDR4 / DDR5 RAM & NVMe SSDs →",
+          url: buildAmazonSearchUrl(ramGb <= 8 ? "16GB DDR4 RAM kit NVMe SSD" : "32GB DDR4 DDR5 RAM kit")
+        };
+      }
+
+      // Balanced / High-FPS rig recommendation
+      return {
+        title: "Optimize Your View: 144Hz–180Hz Fast IPS Gaming Monitor",
+        desc: "Your CPU, GPU, and memory are well balanced! Pair your rig with a 144Hz+ FreeSync/G-Sync monitor so you actually see every frame.",
+        btnText: "Check Top Budget 144Hz–180Hz Monitors →",
+        url: buildAmazonSearchUrl("144Hz 180Hz IPS gaming monitor")
+      };
+    }
+
+    /**
+     * ============================================================================
+     * COMPREHENSIVE CPU DATABASE (100+ Desktop & Laptop Models: Legacy to 2026)
+     * ============================================================================
+     */
+    const CPU_CATALOG = [
+      // Legacy / Office & Ultra-Budget
+      { id: "athlon-7120u", name: "AMD Athlon Silver 7120U", cores: "2C / 2T", category: "Legacy / Office & Ultra-Budget", score: 24 },
+      { id: "athlon-3000g", name: "AMD Athlon 3000G", cores: "2C / 4T", category: "Legacy / Office & Ultra-Budget", score: 25 },
+      { id: "i5-3470s", name: "Intel Core i5-3470S (3rd Gen)", cores: "4C / 4T", category: "Legacy / Office & Ultra-Budget", score: 26 },
+      { id: "fx-8350", name: "AMD FX-8350 Black Edition", cores: "8C / 8T", category: "Legacy / Office & Ultra-Budget", score: 28 },
+      { id: "i5-4590", name: "Intel Core i5-4590 (4th Gen)", cores: "4C / 4T", category: "Legacy / Office & Ultra-Budget", score: 30 },
+      { id: "i5-6500", name: "Intel Core i5-6500 (6th Gen)", cores: "4C / 4T", category: "Legacy / Office & Ultra-Budget", score: 33 },
+      { id: "ryzen-3-3200g", name: "AMD Ryzen 3 3200G", cores: "4C / 4T", category: "Legacy / Office & Ultra-Budget", score: 34 },
+      { id: "i7-4790k", name: "Intel Core i7-4790K (4th Gen)", cores: "4C / 8T", category: "Legacy / Office & Ultra-Budget", score: 36 },
+      { id: "i7-7700k", name: "Intel Core i7-7700K (7th Gen)", cores: "4C / 8T", category: "Legacy / Office & Ultra-Budget", score: 41 },
+      { id: "ryzen-3-5300u", name: "AMD Ryzen 3 5300U (Laptop)", cores: "4C / 8T", category: "Legacy / Office & Ultra-Budget", score: 42 },
+      { id: "ryzen-5-1600", name: "AMD Ryzen 5 1600 (1st Gen)", cores: "6C / 12T", category: "Legacy / Office & Ultra-Budget", score: 43 },
+      { id: "i5-8400", name: "Intel Core i5-8400 (8th Gen)", cores: "6C / 6T", category: "Legacy / Office & Ultra-Budget", score: 44 },
+      { id: "i5-9400f", name: "Intel Core i5-9400F (9th Gen)", cores: "6C / 6T", category: "Legacy / Office & Ultra-Budget", score: 46 },
+      { id: "ryzen-5-2600", name: "AMD Ryzen 5 2600", cores: "6C / 12T", category: "Legacy / Office & Ultra-Budget", score: 48 },
+      { id: "i7-8700k", name: "Intel Core i7-8700K (8th Gen)", cores: "6C / 12T", category: "Legacy / Office & Ultra-Budget", score: 52 },
+      { id: "i7-9700k", name: "Intel Core i7-9700K (9th Gen)", cores: "8C / 8T", category: "Legacy / Office & Ultra-Budget", score: 56 },
+
+      // Budget / Entry Gaming (Desktop & Laptop)
+      { id: "ryzen-3-3100", name: "AMD Ryzen 3 3100", cores: "4C / 8T", category: "Budget / Entry Gaming", score: 45 },
+      { id: "ryzen-3-4100", name: "AMD Ryzen 3 4100", cores: "4C / 8T", category: "Budget / Entry Gaming", score: 46 },
+      { id: "ryzen-5-7520u", name: "AMD Ryzen 5 7520U (Laptop)", cores: "4C / 8T", category: "Budget / Entry Gaming", score: 47 },
+      { id: "i3-10100f", name: "Intel Core i3-10100F", cores: "4C / 8T", category: "Budget / Entry Gaming", score: 49 },
+      { id: "ryzen-5-5500u", name: "AMD Ryzen 5 5500U (Laptop)", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 50 },
+      { id: "core-5-120u", name: "Intel Core 5 120U (Laptop)", cores: "10C / 12T", category: "Budget / Entry Gaming", score: 53 },
+      { id: "ryzen-5-4500", name: "AMD Ryzen 5 4500", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 53 },
+      { id: "ryzen-5-4600h", name: "AMD Ryzen 5 4600H (Laptop)", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 54 },
+      { id: "i5-10400f", name: "Intel Core i5-10400F", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 57 },
+      { id: "ryzen-5-3600", name: "AMD Ryzen 5 3600", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 59 },
+      { id: "i5-11400h", name: "Intel Core i5-11400H (Laptop)", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 60 },
+      { id: "i5-11400f", name: "Intel Core i5-11400F", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 61 },
+      { id: "i3-12100f", name: "Intel Core i3-12100F", cores: "4C / 8T", category: "Budget / Entry Gaming", score: 62 },
+      { id: "ryzen-5-5600g", name: "AMD Ryzen 5 5600G (APU)", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 63 },
+      { id: "ryzen-5-5600h", name: "AMD Ryzen 5 5600H (Laptop)", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 63 },
+      { id: "ryzen-5-5500", name: "AMD Ryzen 5 5500", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 64 },
+      { id: "i5-12450h", name: "Intel Core i5-12450H (Laptop)", cores: "8C / 12T", category: "Budget / Entry Gaming", score: 65 },
+      { id: "ryzen-5-6600h", name: "AMD Ryzen 5 6600H (Laptop)", cores: "6C / 12T", category: "Budget / Entry Gaming", score: 66 },
+      { id: "ryzen-7-3700x", name: "AMD Ryzen 7 3700X", cores: "8C / 16T", category: "Budget / Entry Gaming", score: 66 },
+      { id: "i3-13100f", name: "Intel Core i3-13100F", cores: "4C / 8T", category: "Budget / Entry Gaming", score: 65 },
+
+      // Mid-Range Desktop & Laptop
+      { id: "apple-m1", name: "Apple M1 (8-Core)", cores: "8C / 8T", category: "Mid-Range Desktop & Laptop", score: 68 },
+      { id: "ryzen-7-5800h", name: "AMD Ryzen 7 5800H (Laptop)", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 69 },
+      { id: "ryzen-5-7535hs", name: "AMD Ryzen 5 7535HS (Laptop)", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 70 },
+      { id: "ryzen-7-6800h", name: "AMD Ryzen 7 6800H (Laptop)", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 72 },
+      { id: "apple-m2", name: "Apple M2 (8-Core)", cores: "8C / 8T", category: "Mid-Range Desktop & Laptop", score: 73 },
+      { id: "i5-12400f", name: "Intel Core i5-12400F", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 74 },
+      { id: "ryzen-5-5600", name: "AMD Ryzen 5 5600", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 74 },
+      { id: "ryzen-7-7735hs", name: "AMD Ryzen 7 7735HS (Laptop)", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 74 },
+      { id: "ryzen-5-5600x", name: "AMD Ryzen 5 5600X", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 76 },
+      { id: "i7-13620h", name: "Intel Core i7-13620H (Laptop)", cores: "10C / 16T", category: "Mid-Range Desktop & Laptop", score: 77 },
+      { id: "core-ultra-7-255u", name: "Intel Core Ultra 7 255U (Laptop)", cores: "12C / 14T", category: "Mid-Range Desktop & Laptop", score: 77 },
+      { id: "core-ultra-7-258v", name: "Intel Core Ultra 7 258V (Lunar Lake)", cores: "8C / 8T", category: "Mid-Range Desktop & Laptop", score: 78 },
+      { id: "i5-13400f", name: "Intel Core i5-13400F", cores: "10C / 16T", category: "Mid-Range Desktop & Laptop", score: 78 },
+      { id: "ryzen-7-5700x", name: "AMD Ryzen 7 5700X", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 78 },
+      { id: "ryzen-7-5800x", name: "AMD Ryzen 7 5800X", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 79 },
+      { id: "ryzen-5-8600g", name: "AMD Ryzen 5 8600G (APU)", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 79 },
+      { id: "i7-13700h", name: "Intel Core i7-13700H (Laptop)", cores: "14C / 20T", category: "Mid-Range Desktop & Laptop", score: 80 },
+      { id: "i5-14400f", name: "Intel Core i5-14400F", cores: "10C / 16T", category: "Mid-Range Desktop & Laptop", score: 80 },
+      { id: "apple-m3", name: "Apple M3 (8-Core)", cores: "8C / 8T", category: "Mid-Range Desktop & Laptop", score: 80 },
+      { id: "ryzen-7-7840hs", name: "AMD Ryzen 7 7840HS (Laptop)", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 81 },
+      { id: "ryzen-7-8845hs", name: "AMD Ryzen 7 8845HS (Laptop)", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 82 },
+      { id: "core-ultra-5-225f", name: "Intel Core Ultra 5 225F", cores: "10C / 10T", category: "Mid-Range Desktop & Laptop", score: 82 },
+      { id: "ryzen-9-5900x", name: "AMD Ryzen 9 5900X", cores: "12C / 24T", category: "Mid-Range Desktop & Laptop", score: 82 },
+      { id: "ryzen-5-7500f", name: "AMD Ryzen 5 7500F", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 83 },
+      { id: "ryzen-9-5950x", name: "AMD Ryzen 9 5950X", cores: "16C / 32T", category: "Mid-Range Desktop & Laptop", score: 84 },
+      { id: "ryzen-5-7600", name: "AMD Ryzen 5 7600", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 84 },
+      { id: "ryzen-7-8700g", name: "AMD Ryzen 7 8700G (APU)", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 84 },
+      { id: "i7-12700k", name: "Intel Core i7-12700K", cores: "12C / 20T", category: "Mid-Range Desktop & Laptop", score: 84 },
+      { id: "ryzen-5-7600x", name: "AMD Ryzen 5 7600X", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 85 },
+      { id: "ryzen-7-5700x3d", name: "AMD Ryzen 7 5700X3D", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 87 },
+      { id: "ryzen-5-9600", name: "AMD Ryzen 5 9600", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 88 },
+      { id: "core-ultra-5-245k", name: "Intel Core Ultra 5 245K", cores: "14C / 14T", category: "Mid-Range Desktop & Laptop", score: 88 },
+      { id: "ryzen-7-5800x3d", name: "AMD Ryzen 7 5800X3D", cores: "8C / 16T", category: "Mid-Range Desktop & Laptop", score: 89 },
+      { id: "ryzen-5-9600x", name: "AMD Ryzen 5 9600X", cores: "6C / 12T", category: "Mid-Range Desktop & Laptop", score: 89 },
+      { id: "core-ultra-5-250k-plus", name: "Intel Core Ultra 5 250K Plus", cores: "14C / 14T", category: "Mid-Range Desktop & Laptop", score: 90 },
+
+      // High-End & 2026 Flagships
+      { id: "apple-m4", name: "Apple M4 (10-Core)", cores: "10C / 10T", category: "High-End & 2026 Flagships", score: 88 },
+      { id: "i5-13600k", name: "Intel Core i5-13600K", cores: "14C / 20T", category: "High-End & 2026 Flagships", score: 88 },
+      { id: "ryzen-7-7700x", name: "AMD Ryzen 7 7700X", cores: "8C / 16T", category: "High-End & 2026 Flagships", score: 89 },
+      { id: "ryzen-ai-9-hx-370", name: "AMD Ryzen AI 9 HX 370 (Laptop)", cores: "12C / 24T", category: "High-End & 2026 Flagships", score: 89 },
+      { id: "i5-14600k", name: "Intel Core i5-14600K", cores: "14C / 20T", category: "High-End & 2026 Flagships", score: 90 },
+      { id: "i7-13700k", name: "Intel Core i7-13700K", cores: "16C / 24T", category: "High-End & 2026 Flagships", score: 91 },
+      { id: "apple-m4-pro", name: "Apple M4 Pro (14-Core)", cores: "14C / 14T", category: "High-End & 2026 Flagships", score: 92 },
+      { id: "apple-m5", name: "Apple M5 (10-Core)", cores: "10C / 10T", category: "High-End & 2026 Flagships", score: 92 },
+      { id: "ryzen-7-9700x", name: "AMD Ryzen 7 9700X", cores: "8C / 16T", category: "High-End & 2026 Flagships", score: 92 },
+      { id: "ryzen-9-7900x", name: "AMD Ryzen 9 7900X", cores: "12C / 24T", category: "High-End & 2026 Flagships", score: 92 },
+      { id: "i7-14700k", name: "Intel Core i7-14700K", cores: "20C / 28T", category: "High-End & 2026 Flagships", score: 93 },
+      { id: "core-ultra-7-265k", name: "Intel Core Ultra 7 265K", cores: "20C / 20T", category: "High-End & 2026 Flagships", score: 93 },
+      { id: "i9-14900hx", name: "Intel Core i9-14900HX (Laptop)", cores: "24C / 32T", category: "High-End & 2026 Flagships", score: 93 },
+      { id: "core-ultra-7-270hx-plus", name: "Intel Core Ultra 7 270HX Plus (Laptop)", cores: "24C / 24T", category: "High-End & 2026 Flagships", score: 94 },
+      { id: "ryzen-9-9900x", name: "AMD Ryzen 9 9900X", cores: "12C / 24T", category: "High-End & 2026 Flagships", score: 94 },
+      { id: "i9-13900k", name: "Intel Core i9-13900K", cores: "24C / 32T", category: "High-End & 2026 Flagships", score: 94 },
+      { id: "apple-m4-max", name: "Apple M4 Max (16-Core)", cores: "16C / 16T", category: "High-End & 2026 Flagships", score: 95 },
+      { id: "core-ultra-7-270k-plus", name: "Intel Core Ultra 7 270K Plus", cores: "24C / 24T", category: "High-End & 2026 Flagships", score: 95 },
+      { id: "ryzen-9-9955hx", name: "AMD Ryzen 9 9955HX (Laptop)", cores: "16C / 32T", category: "High-End & 2026 Flagships", score: 95 },
+      { id: "i9-14900k", name: "Intel Core i9-14900K", cores: "24C / 32T", category: "High-End & 2026 Flagships", score: 96 },
+      { id: "core-ultra-9-285k", name: "Intel Core Ultra 9 285K", cores: "24C / 24T", category: "High-End & 2026 Flagships", score: 96 },
+      { id: "core-ultra-9-290hx-plus", name: "Intel Core Ultra 9 290HX Plus (Laptop)", cores: "24C / 24T", category: "High-End & 2026 Flagships", score: 96 },
+      { id: "ryzen-7-7800x3d", name: "AMD Ryzen 7 7800X3D", cores: "8C / 16T", category: "High-End & 2026 Flagships", score: 97 },
+      { id: "ryzen-9-7950x3d", name: "AMD Ryzen 9 7950X3D", cores: "16C / 32T", category: "High-End & 2026 Flagships", score: 97 },
+      { id: "ryzen-9-9950x", name: "AMD Ryzen 9 9950X", cores: "16C / 32T", category: "High-End & 2026 Flagships", score: 97 },
+      { id: "ryzen-9-9955hx3d", name: "AMD Ryzen 9 9955HX3D (Laptop)", cores: "16C / 32T", category: "High-End & 2026 Flagships", score: 98 },
+      { id: "ryzen-7-9800x3d", name: "AMD Ryzen 7 9800X3D", cores: "8C / 16T", category: "High-End & 2026 Flagships", score: 99 },
+      { id: "ryzen-9-9950x3d", name: "AMD Ryzen 9 9950X3D", cores: "16C / 32T", category: "High-End & 2026 Flagships", score: 99 }
+    ];
+
+    /**
+     * ============================================================================
+     * COMPREHENSIVE GPU DATABASE (105+ Desktop, Laptop & Integrated GPUs)
+     * ============================================================================
+     */
+    const GPU_CATALOG = [
+      // Integrated Graphics (iGPUs)
+      { id: "intel-uhd-630", name: "Intel UHD Graphics 630 (iGPU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 13 },
+      { id: "intel-uhd-770", name: "Intel UHD Graphics 770 (iGPU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 16 },
+      { id: "radeon-610m", name: "AMD Radeon 610M (iGPU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 17 },
+      { id: "radeon-vega-8", name: "AMD Radeon RX Vega 8 (5600G/5700G)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 22 },
+      { id: "intel-iris-xe", name: "Intel Iris Xe Graphics (96EU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 24 },
+      { id: "radeon-660m", name: "AMD Radeon 660M (iGPU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 26 },
+      { id: "radeon-680m", name: "AMD Radeon 680M (iGPU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 31 },
+      { id: "radeon-760m", name: "AMD Radeon 760M (iGPU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 32 },
+      { id: "intel-arc-igpu", name: "Intel Arc Graphics (Core Ultra iGPU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 35 },
+      { id: "radeon-780m", name: "AMD Radeon 780M (7840HS/8845HS)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 37 },
+      { id: "intel-arc-140v", name: "Intel Arc 140V (Lunar Lake iGPU)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 40 },
+      { id: "radeon-890m", name: "AMD Radeon 890M (Ryzen AI 9 HX 370)", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 43 },
+      { id: "apple-m1-gpu", name: "Apple M1 8-Core GPU", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 36 },
+      { id: "apple-m2-gpu", name: "Apple M2 10-Core GPU", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 42 },
+      { id: "apple-m3-gpu", name: "Apple M3 10-Core GPU", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 48 },
+      { id: "apple-m4-gpu", name: "Apple M4 10-Core GPU", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 54 },
+      { id: "apple-m4-pro-gpu", name: "Apple M4 Pro 20-Core GPU", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 71 },
+      { id: "apple-m4-max-gpu", name: "Apple M4 Max 40-Core GPU", vram: "Shared", category: "Integrated Graphics (iGPU)", score: 85 },
+
+      // Legacy & Entry-Level Dedicated GPUs
+      { id: "gt-710", name: "NVIDIA GeForce GT 710 2GB", vram: "2GB", category: "Legacy & Entry-Level", score: 11 },
+      { id: "gt-1030", name: "NVIDIA GeForce GT 1030 2GB GDDR5", vram: "2GB", category: "Legacy & Entry-Level", score: 21 },
+      { id: "gtx-750-ti", name: "NVIDIA GeForce GTX 750 Ti 2GB", vram: "2GB", category: "Legacy & Entry-Level", score: 24 },
+      { id: "rx-550", name: "AMD Radeon RX 550 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 25 },
+      { id: "mx-450", name: "NVIDIA GeForce MX450 2GB (Laptop)", vram: "2GB", category: "Legacy & Entry-Level", score: 27 },
+      { id: "gtx-960", name: "NVIDIA GeForce GTX 960 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 31 },
+      { id: "gtx-1050", name: "NVIDIA GeForce GTX 1050 2GB", vram: "2GB", category: "Legacy & Entry-Level", score: 32 },
+      { id: "rx-560", name: "AMD Radeon RX 560 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 33 },
+      { id: "gtx-1050-ti", name: "NVIDIA GeForce GTX 1050 Ti 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 36 },
+      { id: "gtx-970", name: "NVIDIA GeForce GTX 970 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 42 },
+      { id: "rx-570-4gb", name: "AMD Radeon RX 570 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 43 },
+      { id: "gtx-1650", name: "NVIDIA GeForce GTX 1650 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 44 },
+      { id: "gtx-1650-laptop", name: "NVIDIA GeForce GTX 1650 (Laptop 4GB)", vram: "4GB", category: "Legacy & Entry-Level", score: 41 },
+      { id: "rx-6400", name: "AMD Radeon RX 6400 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 43 },
+      { id: "rx-580-8gb", name: "AMD Radeon RX 580 8GB", vram: "8GB", category: "Legacy & Entry-Level", score: 48 },
+      { id: "gtx-1060-6gb", name: "NVIDIA GeForce GTX 1060 6GB", vram: "6GB", category: "Legacy & Entry-Level", score: 48 },
+      { id: "gtx-1650-super", name: "NVIDIA GeForce GTX 1650 SUPER 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 50 },
+      { id: "rx-6500-xt", name: "AMD Radeon RX 6500 XT 4GB", vram: "4GB", category: "Legacy & Entry-Level", score: 47 },
+      { id: "rtx-2050-laptop", name: "NVIDIA GeForce RTX 2050 (Laptop 4GB)", vram: "4GB", category: "Legacy & Entry-Level", score: 48 },
+      { id: "rtx-3050-4gb-laptop", name: "NVIDIA GeForce RTX 3050 (Laptop 4GB)", vram: "4GB", category: "Legacy & Entry-Level", score: 51 },
+      { id: "rtx-3050-6gb", name: "NVIDIA GeForce RTX 3050 6GB", vram: "6GB", category: "Legacy & Entry-Level", score: 52 },
+      { id: "gtx-1660", name: "NVIDIA GeForce GTX 1660 6GB", vram: "6GB", category: "Legacy & Entry-Level", score: 54 },
+      { id: "gtx-1660-super", name: "NVIDIA GeForce GTX 1660 SUPER 6GB", vram: "6GB", category: "Legacy & Entry-Level", score: 57 },
+      { id: "gtx-1660-ti", name: "NVIDIA GeForce GTX 1660 Ti 6GB", vram: "6GB", category: "Legacy & Entry-Level", score: 58 },
+
+      // Mid-Range 1080p & 1440p Sweet Spot
+      { id: "rtx-3050-8gb", name: "NVIDIA GeForce RTX 3050 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 56 },
+      { id: "rtx-3050-6gb-laptop", name: "NVIDIA GeForce RTX 3050 (Laptop 6GB)", vram: "6GB", category: "Mid-Range Gaming", score: 54 },
+      { id: "gtx-1070", name: "NVIDIA GeForce GTX 1070 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 57 },
+      { id: "rx-5600-xt", name: "AMD Radeon RX 5600 XT 6GB", vram: "6GB", category: "Mid-Range Gaming", score: 60 },
+      { id: "rtx-2060", name: "NVIDIA GeForce RTX 2060 6GB", vram: "6GB", category: "Mid-Range Gaming", score: 60 },
+      { id: "rtx-2060-super", name: "NVIDIA GeForce RTX 2060 SUPER 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 63 },
+      { id: "gtx-1080", name: "NVIDIA GeForce GTX 1080 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 63 },
+      { id: "arc-a580", name: "Intel Arc A580 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 63 },
+      { id: "rx-6600", name: "AMD Radeon RX 6600 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 64 },
+      { id: "rtx-4050-laptop", name: "NVIDIA GeForce RTX 4050 (Laptop 6GB)", vram: "6GB", category: "Mid-Range Gaming", score: 64 },
+      { id: "rtx-3060-laptop", name: "NVIDIA GeForce RTX 3060 (Laptop 6GB)", vram: "6GB", category: "Mid-Range Gaming", score: 64 },
+      { id: "arc-a750", name: "Intel Arc A750 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 66 },
+      { id: "rtx-2070-super", name: "NVIDIA GeForce RTX 2070 SUPER 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 67 },
+      { id: "rtx-3060-12gb", name: "NVIDIA GeForce RTX 3060 12GB", vram: "12GB", category: "Mid-Range Gaming", score: 67 },
+      { id: "rx-6600-xt", name: "AMD Radeon RX 6600 XT 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 68 },
+      { id: "rx-6650-xt", name: "AMD Radeon RX 6650 XT 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 69 },
+      { id: "arc-a770-16gb", name: "Intel Arc A770 16GB", vram: "16GB", category: "Mid-Range Gaming", score: 69 },
+      { id: "rx-7600", name: "AMD Radeon RX 7600 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 70 },
+      { id: "rtx-4060-laptop", name: "NVIDIA GeForce RTX 4060 (Laptop 8GB)", vram: "8GB", category: "Mid-Range Gaming", score: 70 },
+      { id: "arc-b570", name: "Intel Arc B570 10GB", vram: "10GB", category: "Mid-Range Gaming", score: 71 },
+      { id: "rtx-4060", name: "NVIDIA GeForce RTX 4060 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 72 },
+      { id: "rx-7600-xt", name: "AMD Radeon RX 7600 XT 16GB", vram: "16GB", category: "Mid-Range Gaming", score: 73 },
+      { id: "rtx-3060-ti", name: "NVIDIA GeForce RTX 3060 Ti 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 74 },
+      { id: "arc-b580", name: "Intel Arc B580 12GB", vram: "12GB", category: "Mid-Range Gaming", score: 75 },
+      { id: "rx-6700-xt", name: "AMD Radeon RX 6700 XT 12GB", vram: "12GB", category: "Mid-Range Gaming", score: 75 },
+      { id: "rtx-5050-laptop", name: "NVIDIA GeForce RTX 5050 (Laptop 8GB)", vram: "8GB", category: "Mid-Range Gaming", score: 73 },
+      { id: "rtx-5060-laptop", name: "NVIDIA GeForce RTX 5060 (Laptop 8GB)", vram: "8GB", category: "Mid-Range Gaming", score: 77 },
+      { id: "rtx-4060-ti-8gb", name: "NVIDIA GeForce RTX 4060 Ti 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 77 },
+      { id: "rtx-4060-ti-16gb", name: "NVIDIA GeForce RTX 4060 Ti 16GB", vram: "16GB", category: "Mid-Range Gaming", score: 78 },
+      { id: "rtx-3070", name: "NVIDIA GeForce RTX 3070 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 78 },
+      { id: "rx-6750-xt", name: "AMD Radeon RX 6750 XT 12GB", vram: "12GB", category: "Mid-Range Gaming", score: 78 },
+      { id: "rtx-4070-laptop", name: "NVIDIA GeForce RTX 4070 (Laptop 8GB)", vram: "8GB", category: "Mid-Range Gaming", score: 76 },
+      { id: "rtx-5060", name: "NVIDIA GeForce RTX 5060 8GB", vram: "8GB", category: "Mid-Range Gaming", score: 79 },
+      { id: "rtx-5060-ti-16gb", name: "NVIDIA GeForce RTX 5060 Ti 16GB", vram: "16GB", category: "Mid-Range Gaming", score: 82 },
+      { id: "rx-9060-xt-16gb", name: "AMD Radeon RX 9060 XT 16GB", vram: "16GB", category: "Mid-Range Gaming", score: 82 },
+
+      // Enthusiast 1440p & 4K Flagships
+      { id: "rtx-3070-ti", name: "NVIDIA GeForce RTX 3070 Ti 8GB", vram: "8GB", category: "Enthusiast 1440p & 4K", score: 80 },
+      { id: "rx-7700-xt", name: "AMD Radeon RX 7700 XT 12GB", vram: "12GB", category: "Enthusiast 1440p & 4K", score: 81 },
+      { id: "rx-6800", name: "AMD Radeon RX 6800 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 82 },
+      { id: "rtx-4070", name: "NVIDIA GeForce RTX 4070 12GB", vram: "12GB", category: "Enthusiast 1440p & 4K", score: 84 },
+      { id: "rx-7800-xt", name: "AMD Radeon RX 7800 XT 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 85 },
+      { id: "rtx-3080-10gb", name: "NVIDIA GeForce RTX 3080 10GB", vram: "10GB", category: "Enthusiast 1440p & 4K", score: 85 },
+      { id: "rx-6800-xt", name: "AMD Radeon RX 6800 XT 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 85 },
+      { id: "rtx-4070-super", name: "NVIDIA GeForce RTX 4070 SUPER 12GB", vram: "12GB", category: "Enthusiast 1440p & 4K", score: 87 },
+      { id: "rtx-5070", name: "NVIDIA GeForce RTX 5070 12GB", vram: "12GB", category: "Enthusiast 1440p & 4K", score: 88 },
+      { id: "rx-7900-gre", name: "AMD Radeon RX 7900 GRE 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 88 },
+      { id: "rtx-3080-ti", name: "NVIDIA GeForce RTX 3080 Ti 12GB", vram: "12GB", category: "Enthusiast 1440p & 4K", score: 88 },
+      { id: "rtx-4080-laptop", name: "NVIDIA GeForce RTX 4080 (Laptop 12GB)", vram: "12GB", category: "Enthusiast 1440p & 4K", score: 86 },
+      { id: "rtx-4070-ti", name: "NVIDIA GeForce RTX 4070 Ti 12GB", vram: "12GB", category: "Enthusiast 1440p & 4K", score: 89 },
+      { id: "rtx-3090", name: "NVIDIA GeForce RTX 3090 24GB", vram: "24GB", category: "Enthusiast 1440p & 4K", score: 89 },
+      { id: "rtx-4070-ti-super", name: "NVIDIA GeForce RTX 4070 Ti SUPER 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 91 },
+      { id: "rx-7900-xt", name: "AMD Radeon RX 7900 XT 20GB", vram: "20GB", category: "Enthusiast 1440p & 4K", score: 91 },
+      { id: "rx-9070", name: "AMD Radeon RX 9070 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 91 },
+      { id: "rtx-5070-ti", name: "NVIDIA GeForce RTX 5070 Ti 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 93 },
+      { id: "rx-9070-xt", name: "AMD Radeon RX 9070 XT 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 94 },
+      { id: "rtx-4080", name: "NVIDIA GeForce RTX 4080 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 94 },
+      { id: "rtx-4080-super", name: "NVIDIA GeForce RTX 4080 SUPER 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 95 },
+      { id: "rx-7900-xtx", name: "AMD Radeon RX 7900 XTX 24GB", vram: "24GB", category: "Enthusiast 1440p & 4K", score: 95 },
+      { id: "rtx-5080", name: "NVIDIA GeForce RTX 5080 16GB", vram: "16GB", category: "Enthusiast 1440p & 4K", score: 96 },
+      { id: "rtx-4090", name: "NVIDIA GeForce RTX 4090 24GB", vram: "24GB", category: "Enthusiast 1440p & 4K", score: 98 },
+      { id: "rtx-5090", name: "NVIDIA GeForce RTX 5090 32GB", vram: "32GB", category: "Enthusiast 1440p & 4K", score: 99 }
+    ];
+
+    /**
+     * ============================================================================
+     * COMPREHENSIVE GAME & ENGINE BENCHMARK DATABASE (65+ Calibrated Titles)
+     * Anchor baseline: baseHighFps = average FPS on RTX 3050 8GB + Ryzen 5 5600X
+     * at 1080p High Preset, Native Rendering (no DLSS/FSR)
+     * ============================================================================
+     */
+    const GAME_CATALOG = [
+      // Game Engines & 3D Viewports
+      { id: "ue5-light-viewport", name: "Unreal Engine 5.5 Viewport (Lightweight <1M Tris)", engine: "UE5.5", category: "Game Engines & 3D Viewports", demand: "Light Viewport", baseHighFps: 122, gpuWeight: 0.65, cpuWeight: 0.35, vramHigh: 4 },
+      { id: "ue5-standard-level", name: "Unreal Engine 5.5 Editor (Standard Indie Level)", engine: "UE5.5", category: "Game Engines & 3D Viewports", demand: "Moderate", baseHighFps: 74, gpuWeight: 0.68, cpuWeight: 0.32, vramHigh: 6 },
+      { id: "ue5-lumen-openworld", name: "Unreal Engine 5.5 Editor (Heavy Lumen + Nanite)", engine: "UE5.5", category: "Game Engines & 3D Viewports", demand: "Very Heavy", baseHighFps: 42, gpuWeight: 0.74, cpuWeight: 0.26, vramHigh: 10 },
+      { id: "unity-6-urp", name: "Unity 6 Editor (URP / Stylized 3D Scene)", engine: "Unity 6", category: "Game Engines & 3D Viewports", demand: "Light Viewport", baseHighFps: 145, gpuWeight: 0.60, cpuWeight: 0.40, vramHigh: 4 },
+      { id: "unity-6-hdrp", name: "Unity 6 Editor (HDRP Ray-Traced Scene)", engine: "Unity 6", category: "Game Engines & 3D Viewports", demand: "Heavy", baseHighFps: 54, gpuWeight: 0.72, cpuWeight: 0.28, vramHigh: 8 },
+      { id: "blender-eevee", name: "Blender 4.3 Viewport (EEVEE Next Real-Time)", engine: "EEVEE Next", category: "Game Engines & 3D Viewports", demand: "Moderate", baseHighFps: 92, gpuWeight: 0.72, cpuWeight: 0.28, vramHigh: 6 },
+
+      // Heavy & Ultra-Demanding AAA Titles
+      { id: "cyberpunk-2077", name: "Cyberpunk 2077 (2.2 / Phantom Liberty)", engine: "REDengine 4", category: "Heavy & Ultra-Demanding AAA", demand: "Very Heavy", baseHighFps: 46, gpuWeight: 0.72, cpuWeight: 0.28, vramHigh: 8 },
+      { id: "gta-vi", name: "Grand Theft Auto VI (Projected PC Spec)", engine: "RAGE 9", category: "Heavy & Ultra-Demanding AAA", demand: "Extreme", baseHighFps: 38, gpuWeight: 0.66, cpuWeight: 0.34, vramHigh: 10 },
+      { id: "black-myth-wukong", name: "Black Myth: Wukong", engine: "UE5", category: "Heavy & Ultra-Demanding AAA", demand: "Extreme", baseHighFps: 39, gpuWeight: 0.78, cpuWeight: 0.22, vramHigh: 8 },
+      { id: "alan-wake-2", name: "Alan Wake 2 (Mesh Shaders)", engine: "Northlight", category: "Heavy & Ultra-Demanding AAA", demand: "Extreme", baseHighFps: 35, gpuWeight: 0.80, cpuWeight: 0.20, vramHigh: 10 },
+      { id: "stalker-2", name: "S.T.A.L.K.E.R. 2: Heart of Chornobyl", engine: "UE5", category: "Heavy & Ultra-Demanding AAA", demand: "Very Heavy", baseHighFps: 42, gpuWeight: 0.65, cpuWeight: 0.35, vramHigh: 8 },
+      { id: "monster-hunter-wilds", name: "Monster Hunter Wilds", engine: "RE Engine", category: "Heavy & Ultra-Demanding AAA", demand: "Very Heavy", baseHighFps: 41, gpuWeight: 0.64, cpuWeight: 0.36, vramHigh: 8 },
+      { id: "starfield", name: "Starfield (Shattered Space)", engine: "Creation 2", category: "Heavy & Ultra-Demanding AAA", demand: "Very Heavy", baseHighFps: 44, gpuWeight: 0.64, cpuWeight: 0.36, vramHigh: 8 },
+      { id: "dragons-dogma-2", name: "Dragon's Dogma 2", engine: "RE Engine", category: "Heavy & Ultra-Demanding AAA", demand: "Very Heavy", baseHighFps: 43, gpuWeight: 0.58, cpuWeight: 0.42, vramHigh: 8 },
+      { id: "indiana-jones-gc", name: "Indiana Jones and the Great Circle", engine: "id Tech 7", category: "Heavy & Ultra-Demanding AAA", demand: "Very Heavy", baseHighFps: 48, gpuWeight: 0.76, cpuWeight: 0.24, vramHigh: 10 },
+      { id: "silent-hill-2", name: "Silent Hill 2 Remake", engine: "UE5", category: "Heavy & Ultra-Demanding AAA", demand: "Very Heavy", baseHighFps: 44, gpuWeight: 0.75, cpuWeight: 0.25, vramHigh: 8 },
+      { id: "the-last-of-us-p1", name: "The Last of Us Part I", engine: "Naughty Dog", category: "Heavy & Ultra-Demanding AAA", demand: "Very Heavy", baseHighFps: 45, gpuWeight: 0.68, cpuWeight: 0.32, vramHigh: 10 },
+      { id: "hogwarts-legacy", name: "Hogwarts Legacy", engine: "UE4", category: "Heavy & Ultra-Demanding AAA", demand: "Heavy", baseHighFps: 52, gpuWeight: 0.66, cpuWeight: 0.34, vramHigh: 8 },
+      { id: "ms-flight-sim-2024", name: "Microsoft Flight Simulator 2024", engine: "Asobo", category: "Heavy & Ultra-Demanding AAA", demand: "Extreme", baseHighFps: 36, gpuWeight: 0.56, cpuWeight: 0.44, vramHigh: 10 },
+      { id: "cities-skylines-2", name: "Cities: Skylines II (100K Pop)", engine: "Unity", category: "Heavy & Ultra-Demanding AAA", demand: "Extreme CPU", baseHighFps: 34, gpuWeight: 0.50, cpuWeight: 0.50, vramHigh: 8 },
+      { id: "helldivers-2", name: "Helldivers 2 (Difficulty 9 Chaos)", engine: "Stingray", category: "Heavy & Ultra-Demanding AAA", demand: "Heavy", baseHighFps: 55, gpuWeight: 0.60, cpuWeight: 0.40, vramHigh: 6 },
+      { id: "space-marine-2", name: "Warhammer 40,000: Space Marine 2", engine: "Swarm", category: "Heavy & Ultra-Demanding AAA", demand: "Heavy", baseHighFps: 50, gpuWeight: 0.62, cpuWeight: 0.38, vramHigh: 8 },
+      { id: "gray-zone-warfare", name: "Gray Zone Warfare", engine: "UE5", category: "Heavy & Ultra-Demanding AAA", demand: "Extreme", baseHighFps: 37, gpuWeight: 0.72, cpuWeight: 0.28, vramHigh: 10 },
+
+      // Well-Optimized AAA & Open-World Classics
+      { id: "rdr2", name: "Red Dead Redemption 2", engine: "RAGE", category: "Open-World & Action AAA", demand: "Moderate-Heavy", baseHighFps: 62, gpuWeight: 0.72, cpuWeight: 0.28, vramHigh: 6 },
+      { id: "elden-ring", name: "Elden Ring: Shadow of the Erdtree", engine: "FromSoft", category: "Open-World & Action AAA", demand: "Moderate", baseHighFps: 60, gpuWeight: 0.66, cpuWeight: 0.34, vramHigh: 6 },
+      { id: "ghost-of-tsushima", name: "Ghost of Tsushima Director's Cut", engine: "Sucker Punch", category: "Open-World & Action AAA", demand: "Moderate", baseHighFps: 66, gpuWeight: 0.74, cpuWeight: 0.26, vramHigh: 6 },
+      { id: "god-of-war-ragnarok", name: "God of War Ragnarök", engine: "Santa Monica", category: "Open-World & Action AAA", demand: "Moderate", baseHighFps: 68, gpuWeight: 0.72, cpuWeight: 0.28, vramHigh: 8 },
+      { id: "god-of-war-2018", name: "God of War (2018)", engine: "Santa Monica", category: "Open-World & Action AAA", demand: "Moderate", baseHighFps: 72, gpuWeight: 0.72, cpuWeight: 0.28, vramHigh: 6 },
+      { id: "spiderman-remastered", name: "Marvel's Spider-Man Remastered", engine: "Insomniac", category: "Open-World & Action AAA", demand: "Moderate", baseHighFps: 74, gpuWeight: 0.64, cpuWeight: 0.36, vramHigh: 6 },
+      { id: "horizon-forbidden-west", name: "Horizon Forbidden West", engine: "Decima", category: "Open-World & Action AAA", demand: "Heavy", baseHighFps: 56, gpuWeight: 0.74, cpuWeight: 0.26, vramHigh: 8 },
+      { id: "forza-horizon-5", name: "Forza Horizon 5", engine: "ForzaTech", category: "Open-World & Action AAA", demand: "Well-Optimized", baseHighFps: 84, gpuWeight: 0.75, cpuWeight: 0.25, vramHigh: 6 },
+      { id: "witcher-3-nextgen", name: "The Witcher 3: Wild Hunt (DX12 Next-Gen)", engine: "REDengine 3", category: "Open-World & Action AAA", demand: "Heavy", baseHighFps: 54, gpuWeight: 0.70, cpuWeight: 0.30, vramHigh: 6 },
+      { id: "baldurs-gate-3", name: "Baldur's Gate 3 (Act 3 City)", engine: "Divinity 4.0", category: "Open-World & Action AAA", demand: "Heavy CPU", baseHighFps: 58, gpuWeight: 0.54, cpuWeight: 0.46, vramHigh: 6 },
+      { id: "re4-remake", name: "Resident Evil 4 Remake", engine: "RE Engine", category: "Open-World & Action AAA", demand: "Well-Optimized", baseHighFps: 78, gpuWeight: 0.74, cpuWeight: 0.26, vramHigh: 8 },
+      { id: "doom-eternal", name: "DOOM Eternal", engine: "id Tech 7", category: "Open-World & Action AAA", demand: "Ultra-Optimized", baseHighFps: 132, gpuWeight: 0.76, cpuWeight: 0.24, vramHigh: 6 },
+      { id: "gta-v-enhanced", name: "Grand Theft Auto V (Enhanced)", engine: "RAGE", category: "Open-World & Action AAA", demand: "Light-Moderate", baseHighFps: 112, gpuWeight: 0.62, cpuWeight: 0.38, vramHigh: 4 },
+      { id: "palworld", name: "Palworld", engine: "UE5", category: "Open-World & Action AAA", demand: "Moderate", baseHighFps: 66, gpuWeight: 0.66, cpuWeight: 0.34, vramHigh: 6 },
+      { id: "rust", name: "Rust (High-Pop Server)", engine: "Unity", category: "Open-World & Action AAA", demand: "CPU & RAM Heavy", baseHighFps: 68, gpuWeight: 0.48, cpuWeight: 0.52, vramHigh: 8 },
+      { id: "escape-from-tarkov", name: "Escape from Tarkov (Streets)", engine: "Unity", category: "Open-World & Action AAA", demand: "CPU & RAM Heavy", baseHighFps: 54, gpuWeight: 0.46, cpuWeight: 0.54, vramHigh: 8 },
+      { id: "beamng-drive", name: "BeamNG.drive (Traffic Enabled)", engine: "Torque3D", category: "Open-World & Action AAA", demand: "CPU Physics Heavy", baseHighFps: 64, gpuWeight: 0.48, cpuWeight: 0.52, vramHigh: 6 },
+      { id: "assetto-corsa-comp", name: "Assetto Corsa Competizione", engine: "UE4", category: "Open-World & Action AAA", demand: "Moderate", baseHighFps: 78, gpuWeight: 0.66, cpuWeight: 0.34, vramHigh: 6 },
+      { id: "ea-fc-25", name: "EA SPORTS FC 25", engine: "Frostbite", category: "Open-World & Action AAA", demand: "Light-Moderate", baseHighFps: 108, gpuWeight: 0.68, cpuWeight: 0.32, vramHigh: 4 },
+
+      // Competitive Esports & Multiplayer Shooters
+      { id: "cs2", name: "Counter-Strike 2 (CS2)", engine: "Source 2", category: "Competitive Esports & Shooters", demand: "CPU-Bound Esports", baseHighFps: 158, gpuWeight: 0.42, cpuWeight: 0.58, vramHigh: 4 },
+      { id: "valorant", name: "Valorant", engine: "UE4", category: "Competitive Esports & Shooters", demand: "Ultra-Light Esports", baseHighFps: 265, gpuWeight: 0.32, cpuWeight: 0.68, vramHigh: 2 },
+      { id: "fortnite-dx12", name: "Fortnite (DX12 / Lumen Off)", engine: "UE5", category: "Competitive Esports & Shooters", demand: "CPU-Bound Esports", baseHighFps: 124, gpuWeight: 0.48, cpuWeight: 0.52, vramHigh: 4 },
+      { id: "fortnite-perf", name: "Fortnite (Competitive Performance Mode)", engine: "UE5", category: "Competitive Esports & Shooters", demand: "Ultra-Light Esports", baseHighFps: 215, gpuWeight: 0.35, cpuWeight: 0.65, vramHigh: 2 },
+      { id: "apex-legends", name: "Apex Legends", engine: "Modified Source", category: "Competitive Esports & Shooters", demand: "Light Esports", baseHighFps: 146, gpuWeight: 0.56, cpuWeight: 0.44, vramHigh: 4 },
+      { id: "cod-warzone", name: "Call of Duty: Warzone / Black Ops 6", engine: "IW 9.0", category: "Competitive Esports & Shooters", demand: "Moderate-Heavy", baseHighFps: 78, gpuWeight: 0.58, cpuWeight: 0.42, vramHigh: 8 },
+      { id: "marvel-rivals", name: "Marvel Rivals", engine: "UE5", category: "Competitive Esports & Shooters", demand: "Heavy Esports", baseHighFps: 66, gpuWeight: 0.64, cpuWeight: 0.36, vramHigh: 6 },
+      { id: "overwatch-2", name: "Overwatch 2", engine: "Tank Engine", category: "Competitive Esports & Shooters", demand: "Light Esports", baseHighFps: 175, gpuWeight: 0.55, cpuWeight: 0.45, vramHigh: 4 },
+      { id: "rainbow-six-siege", name: "Tom Clancy's Rainbow Six Siege", engine: "AnvilNext", category: "Competitive Esports & Shooters", demand: "Light Esports", baseHighFps: 195, gpuWeight: 0.52, cpuWeight: 0.48, vramHigh: 4 },
+      { id: "pubg", name: "PUBG: Battlegrounds", engine: "UE4", category: "Competitive Esports & Shooters", demand: "Moderate", baseHighFps: 112, gpuWeight: 0.54, cpuWeight: 0.46, vramHigh: 4 },
+      { id: "the-finals", name: "THE FINALS (Destruction)", engine: "UE5", category: "Competitive Esports & Shooters", demand: "Heavy", baseHighFps: 64, gpuWeight: 0.60, cpuWeight: 0.40, vramHigh: 6 },
+      { id: "rocket-league", name: "Rocket League", engine: "UE3", category: "Competitive Esports & Shooters", demand: "Ultra-Light Esports", baseHighFps: 290, gpuWeight: 0.45, cpuWeight: 0.55, vramHigh: 2 },
+      { id: "dota-2", name: "Dota 2", engine: "Source 2", category: "Competitive Esports & Shooters", demand: "CPU-Bound Esports", baseHighFps: 145, gpuWeight: 0.40, cpuWeight: 0.60, vramHigh: 4 },
+      { id: "league-of-legends", name: "League of Legends", engine: "Riot Engine", category: "Competitive Esports & Shooters", demand: "Ultra-Light Esports", baseHighFps: 245, gpuWeight: 0.35, cpuWeight: 0.65, vramHigh: 2 },
+      { id: "delta-force", name: "Delta Force: Hawk Ops", engine: "UE5", category: "Competitive Esports & Shooters", demand: "Moderate", baseHighFps: 86, gpuWeight: 0.62, cpuWeight: 0.38, vramHigh: 6 },
+
+      // Indie, Sandbox & Survival Favorites
+      { id: "minecraft-vanilla", name: "Minecraft Java (Sodium / Vanilla 16 Chunks)", engine: "LWJGL", category: "Indie, Sandbox & Survival", demand: "CPU Single-Core", baseHighFps: 240, gpuWeight: 0.35, cpuWeight: 0.65, vramHigh: 2 },
+      { id: "minecraft-shaders", name: "Minecraft Java (Complementary Reimagined Shaders)", engine: "Iris Shaders", category: "Indie, Sandbox & Survival", demand: "GPU Shader Heavy", baseHighFps: 68, gpuWeight: 0.78, cpuWeight: 0.22, vramHigh: 4 },
+      { id: "genshin-impact", name: "Genshin Impact (60 FPS Cap Unlocked Ref)", engine: "Unity", category: "Indie, Sandbox & Survival", demand: "Light", baseHighFps: 120, gpuWeight: 0.62, cpuWeight: 0.38, vramHigh: 4 },
+      { id: "wuthering-waves", name: "Wuthering Waves", engine: "UE4", category: "Indie, Sandbox & Survival", demand: "Moderate", baseHighFps: 88, gpuWeight: 0.64, cpuWeight: 0.36, vramHigh: 6 },
+      { id: "lethal-company", name: "Lethal Company", engine: "Unity", category: "Indie, Sandbox & Survival", demand: "Ultra-Light", baseHighFps: 185, gpuWeight: 0.55, cpuWeight: 0.45, vramHigh: 2 },
+      { id: "valheim", name: "Valheim (Mistlands Base)", engine: "Unity", category: "Indie, Sandbox & Survival", demand: "Moderate", baseHighFps: 82, gpuWeight: 0.62, cpuWeight: 0.38, vramHigh: 4 },
+      { id: "terraria", name: "Terraria (1.4.4)", engine: "XNA / FNA", category: "Indie, Sandbox & Survival", demand: "Potato Friendly", baseHighFps: 300, gpuWeight: 0.30, cpuWeight: 0.70, vramHigh: 1 },
+      { id: "stardew-valley", name: "Stardew Valley (1.6)", engine: "MonoGame", category: "Indie, Sandbox & Survival", demand: "Potato Friendly", baseHighFps: 300, gpuWeight: 0.30, cpuWeight: 0.70, vramHigh: 1 },
+      { id: "hollow-knight", name: "Hollow Knight", engine: "Unity", category: "Indie, Sandbox & Survival", demand: "Potato Friendly", baseHighFps: 280, gpuWeight: 0.45, cpuWeight: 0.55, vramHigh: 2 },
+      { id: "subnautica", name: "Subnautica", engine: "Unity", category: "Indie, Sandbox & Survival", demand: "Light-Moderate", baseHighFps: 118, gpuWeight: 0.65, cpuWeight: 0.35, vramHigh: 4 }
+    ];
+
+    const LABELS = {
+      preset: {
+        low: "Low Preset",
+        medium: "Medium Preset",
+        high: "High Preset",
+        ultra: "Ultra Preset"
+      },
+      upscaling: {
+        native: "Native Res",
+        quality: "DLSS/FSR Quality",
+        balanced: "DLSS/FSR Balanced",
+        performance: "DLSS/FSR Performance"
+      },
+      thermal: {
+        desktop: "Desktop TGP",
+        gaming_laptop: "Gaming Laptop",
+        thin_light: "Thin & Light"
+      }
+    };
+
+    // Active Hardware & Game Selections (Defaults: Ryzen 5 5600X + RTX 3050 8GB + Cyberpunk 2077)
+    let selectedCpu = CPU_CATALOG.find(c => c.id === "ryzen-5-5600x") || CPU_CATALOG[0];
+    let selectedGpu = GPU_CATALOG.find(g => g.id === "rtx-3050-8gb") || GPU_CATALOG[0];
+    let selectedGame = GAME_CATALOG.find(g => g.id === "cyberpunk-2077") || GAME_CATALOG[0];
+
+    const STORAGE_KEY = "lowspec_check_saved_rigs_v3";
+    let selectedResolution = "1080p";
+    let selectedPreset = "high";
+    let selectedUpscaling = "native";
+    let selectedThermal = "desktop";
+    let latestResultSummary = "";
+    let latestMetricsCache = null;
+
+    /**
+     * ============================================================================
+     * SEARCHABLE HARDWARE & GAME DROPDOWN CONTROLLER
+     * ============================================================================
+     */
+    function openHwDropdown(type) {
+      ['cpu', 'gpu', 'game'].forEach(other => {
+        if (other !== type) {
+          const otherMenu = document.getElementById(`${other}DropdownMenu`);
+          if (otherMenu) otherMenu.classList.add('hidden');
+        }
+      });
+
+      const menu = document.getElementById(`${type}DropdownMenu`);
+      const input = document.getElementById(`${type}SearchInput`);
+      if (!menu || !input) return;
+
+      const currentName = type === 'cpu' ? selectedCpu.name : type === 'gpu' ? selectedGpu.name : selectedGame.name;
+      const query = input.value.trim() === currentName ? "" : input.value;
+      renderHwDropdown(type, query);
+      menu.classList.remove('hidden');
+    }
+
+    function toggleHwDropdown(type) {
+      const menu = document.getElementById(`${type}DropdownMenu`);
+      if (!menu) return;
+      if (menu.classList.contains('hidden')) {
+        openHwDropdown(type);
+      } else {
+        menu.classList.add('hidden');
+      }
+    }
+
+    function filterHwDropdown(type, query) {
+      const menu = document.getElementById(`${type}DropdownMenu`);
+      if (menu) menu.classList.remove('hidden');
+      renderHwDropdown(type, query);
+    }
+
+    function clearHwSearch(type) {
+      const input = document.getElementById(`${type}SearchInput`);
+      if (input) {
+        input.value = "";
+        input.focus();
+      }
+      renderHwDropdown(type, "");
+      const menu = document.getElementById(`${type}DropdownMenu`);
+      if (menu) menu.classList.remove('hidden');
+    }
+
+    function selectHwItem(type, id) {
+      if (type === 'cpu') {
+        const found = CPU_CATALOG.find(c => c.id === id);
+        if (!found) return;
+        selectedCpu = found;
+        document.getElementById('cpuSearchInput').value = found.name;
+        document.getElementById('selectedCpuDisplay').textContent = found.name;
+        document.getElementById('selectedCpuScoreTag').textContent = `Benchmark Index: ${found.score}/100`;
+        document.getElementById('cpuBadgePill').textContent = `${found.cores} • ${found.category.split(' ')[0]}`;
+        document.getElementById('cpuDropdownMenu').classList.add('hidden');
+      } else if (type === 'gpu') {
+        const found = GPU_CATALOG.find(g => g.id === id);
+        if (!found) return;
+        selectedGpu = found;
+        document.getElementById('gpuSearchInput').value = found.name;
+        document.getElementById('selectedGpuDisplay').textContent = found.name;
+        document.getElementById('selectedGpuScoreTag').textContent = `Benchmark Index: ${found.score}/100`;
+        document.getElementById('gpuBadgePill').textContent = `${found.vram} VRAM • ${found.category.split(' ')[0]}`;
+        document.getElementById('gpuDropdownMenu').classList.add('hidden');
+      } else if (type === 'game') {
+        const found = GAME_CATALOG.find(g => g.id === id);
+        if (!found) return;
+        selectedGame = found;
+        document.getElementById('gameSearchInput').value = found.name;
+        document.getElementById('selectedGameDisplay').textContent = found.name;
+        document.getElementById('selectedGameWeightTag').textContent = `Demand Tier: ${found.demand}`;
+        document.getElementById('gameBadgePill').textContent = `${found.engine} • ${found.demand}`;
+        document.getElementById('gameDropdownMenu').classList.add('hidden');
+      }
+
+      renderResults(calculateMetrics());
+    }
+
+    function renderHwDropdown(type, query = "") {
+      const menu = document.getElementById(`${type}DropdownMenu`);
+      if (!menu) return;
+
+      const list = type === 'cpu' ? CPU_CATALOG : type === 'gpu' ? GPU_CATALOG : GAME_CATALOG;
+      const activeId = type === 'cpu' ? selectedCpu.id : type === 'gpu' ? selectedGpu.id : selectedGame.id;
+      const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+
+      const filtered = list.filter(item => {
+        if (terms.length === 0) return true;
+        const searchable = `${item.name} ${item.category} ${item.cores || item.vram || item.engine || ""} ${item.demand || ""}`.toLowerCase();
+        return terms.every(t => searchable.includes(t));
+      });
+
+      if (filtered.length === 0) {
+        menu.innerHTML = `<div class="px-4 py-4 text-xs text-gray-400 text-center font-mono">No matching ${type.toUpperCase()} found for "${query}". Try a shorter model number.</div>`;
+        return;
+      }
+
+      const grouped = {};
+      filtered.forEach(item => {
+        if (!grouped[item.category]) grouped[item.category] = [];
+        grouped[item.category].push(item);
+      });
+
+      let html = "";
+      for (const [category, items] of Object.entries(grouped)) {
+        html += `<div class="px-3.5 py-1.5 bg-gray-900/95 text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold sticky top-0 z-10">${category} (${items.length})</div>`;
+        items.forEach(item => {
+          const isSelected = item.id === activeId;
+          const rightBadge = type === 'cpu'
+            ? `${item.cores} • ${item.score}pts`
+            : type === 'gpu'
+              ? `${item.vram} • ${item.score}pts`
+              : `${item.engine} • ${item.demand}`;
+          html += `
+            <button type="button" onclick="selectHwItem('${type}', '${item.id}')" class="w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between gap-2 transition cursor-pointer ${isSelected ? 'bg-cyan-500/20 text-white font-bold' : 'text-gray-300 hover:bg-gray-900 hover:text-white'}">
+              <span class="truncate">${item.name}</span>
+              <span class="font-mono text-[10px] shrink-0 px-2 py-0.5 rounded ${isSelected ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-800 text-gray-400'}">${rightBadge}</span>
+            </button>
+          `;
+        });
+      }
+
+      menu.innerHTML = html;
+    }
+
+    // Close open dropdowns when clicking anywhere outside them
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#cpuPickerContainer')) {
+        const cpuMenu = document.getElementById('cpuDropdownMenu');
+        if (cpuMenu) cpuMenu.classList.add('hidden');
+      }
+      if (!e.target.closest('#gpuPickerContainer')) {
+        const gpuMenu = document.getElementById('gpuDropdownMenu');
+        if (gpuMenu) gpuMenu.classList.add('hidden');
+      }
+      if (!e.target.closest('#gamePickerContainer')) {
+        const gameMenu = document.getElementById('gameDropdownMenu');
+        if (gameMenu) gameMenu.classList.add('hidden');
+      }
+    });
+
+    /**
+     * WebGL Hardware Renderer Auto-Detection with Fuzzy Matching to GPU_CATALOG
+     */
+    function autoDetectGPU() {
+      const btnLabel = document.getElementById('detectGpuLabel');
+      const banner = document.getElementById('detectedGpuBanner');
+      const textEl = document.getElementById('detectedGpuText');
+      const tierEl = document.getElementById('detectedTierBadge');
+
+      btnLabel.textContent = "Scanning...";
+
+      try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) {
+          throw new Error("WebGL unavailable");
+        }
+
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        let renderer = debugInfo
+          ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+          : gl.getParameter(gl.RENDERER);
+
+        const cleanName = renderer
+          .replace(/^ANGLE \((.*)\)$/, '$1')
+          .replace(/Direct3D11 vs_\d+_\d+ ps_\d+_\d+/gi, '')
+          .replace(/, or similar/gi, '')
+          .split(',')[1] || renderer;
+
+        const displayGpu = cleanName.trim() || renderer;
+        const lower = displayGpu.toLowerCase();
+        const isLaptopRenderer = lower.includes("laptop") || lower.includes("max-q") || lower.includes("mobile");
+
+        // Fuzzy match against GPU_CATALOG (preferring desktop models unless WebGL reports Laptop/Max-Q)
+        let matchedGpu = null;
+        const modelTokens = [
+          "5090", "5080", "5070 ti", "5070", "5060 ti", "5060", "5050",
+          "4090", "4080 super", "4080", "4070 ti super", "4070 ti", "4070 super", "4070", "4060 ti", "4060", "4050",
+          "3090", "3080 ti", "3080", "3070 ti", "3070", "3060 ti", "3060", "3050",
+          "2070 super", "2060 super", "2060", "2050",
+          "1660 ti", "1660 super", "1660", "1650 super", "1650",
+          "1080", "1070", "1060", "1050 ti", "1050", "1030", "750 ti", "710",
+          "9070 xt", "9070", "9060 xt",
+          "7900 xtx", "7900 xt", "7900 gre", "7800 xt", "7700 xt", "7600 xt", "7600",
+          "6800 xt", "6800", "6750 xt", "6700 xt", "6650 xt", "6600 xt", "6600", "6500 xt", "6400",
+          "5600 xt", "580", "570", "560", "550",
+          "b580", "b570", "a770", "a750", "a580", "140v",
+          "890m", "780m", "760m", "680m", "660m", "610m", "vega 8", "iris xe", "uhd 770", "uhd 630",
+          "m4 max", "m4 pro", "m4", "m3", "m2", "m1"
+        ];
+
+        for (const token of modelTokens) {
+          if (lower.includes(token)) {
+            const candidates = GPU_CATALOG.filter(g => g.name.toLowerCase().includes(token));
+            if (candidates.length > 0) {
+              matchedGpu = isLaptopRenderer
+                ? (candidates.find(g => g.name.toLowerCase().includes("laptop")) || candidates[0])
+                : (candidates.find(g => !g.name.toLowerCase().includes("laptop") && !g.id.includes("6gb")) ||
+                   candidates.find(g => !g.name.toLowerCase().includes("laptop")) ||
+                   candidates[0]);
+              break;
+            }
+          }
+        }
+
+        if (!matchedGpu) {
+          if (lower.includes("rtx") || lower.includes("radeon rx")) {
+            matchedGpu = GPU_CATALOG.find(g => g.id === "rtx-3060-12gb");
+          } else if (lower.includes("gtx")) {
+            matchedGpu = GPU_CATALOG.find(g => g.id === "gtx-1650");
+          } else {
+            matchedGpu = GPU_CATALOG.find(g => g.id === "intel-iris-xe");
+          }
+        }
+
+        if (matchedGpu) {
+          selectHwItem('gpu', matchedGpu.id);
+        }
+
+        textEl.textContent = displayGpu;
+        tierEl.textContent = `Matched: ${matchedGpu.name}`;
+        banner.classList.remove('hidden');
+        btnLabel.textContent = "GPU Detected ✓";
+        showToast(`Matched ${matchedGpu.name}!`);
+      } catch (err) {
+        btnLabel.textContent = "Auto-Detect GPU";
+        showToast("Browser blocked WebGL info—select GPU manually.");
+      }
+    }
+
+    /**
+     * Pill Toggle Handlers: Graphics Preset, Upscaling, Resolution, Thermal
+     */
+    function setPreset(preset) {
+      selectedPreset = preset;
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.className = btn.dataset.preset === preset
+          ? "preset-btn text-[11px] font-mono font-bold py-2 rounded-lg bg-cyan-500 text-gray-950 transition cursor-pointer"
+          : "preset-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+      });
+      renderResults(calculateMetrics());
+    }
+
+    function setUpscaling(mode) {
+      selectedUpscaling = mode;
+      document.querySelectorAll('.upscale-btn').forEach(btn => {
+        btn.className = btn.dataset.upscale === mode
+          ? "upscale-btn text-[11px] font-mono font-bold py-2 rounded-lg bg-emerald-500 text-gray-950 transition cursor-pointer"
+          : "upscale-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+      });
+      renderResults(calculateMetrics());
+    }
+
+    function setResolution(res) {
+      selectedResolution = res;
+      document.querySelectorAll('.res-btn').forEach(btn => {
+        btn.className = btn.dataset.res === res
+          ? "res-btn text-[11px] font-mono font-bold py-2 rounded-lg bg-cyan-500 text-gray-950 transition cursor-pointer"
+          : "res-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+      });
+      renderResults(calculateMetrics());
+    }
+
+    function setThermal(profile) {
+      selectedThermal = profile;
+      document.querySelectorAll('.thermal-btn').forEach(btn => {
+        btn.className = btn.dataset.thermal === profile
+          ? "thermal-btn text-[11px] font-mono font-bold py-2 rounded-lg bg-cyan-500 text-gray-950 transition cursor-pointer"
+          : "thermal-btn text-[11px] font-mono font-bold py-2 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+      });
+      renderResults(calculateMetrics());
+    }
+
+    /**
+     * Core Game-Calibrated FPS & Frame-Time Calculation Engine
+     * Anchor reference: Ryzen 5 5600X (score 76) + RTX 3050 8GB (score 56) = 1.00x baseline at 1080p High Native
+     */
+    function calculateMetrics() {
+      const cpuScore = selectedCpu.score;
+      const gpuScore = selectedGpu.score;
+      const ramGb = parseInt(document.querySelector('input[name="ram"]:checked').value, 10);
+      const ramChannel = document.querySelector('input[name="ramChannel"]:checked').value;
+      const storageType = document.querySelector('input[name="storageType"]:checked').value;
+      const game = selectedGame;
+      const preset = selectedPreset;
+      const upscaling = selectedUpscaling;
+      const resolution = selectedResolution;
+      const thermal = selectedThermal;
+
+      const isSingleChannel = ramChannel === 'single';
+      const isHdd = storageType === 'hdd';
+      const isIntegratedGpu = selectedGpu.vram === "Shared";
+
+      // Non-linear GPU & CPU scaling curves relative to our RTX 3050 8GB (56) & Ryzen 5 5600X (76) baseline
+      // Ensures low-end cards drop realistically while high-end RTX 4080/5090 scale accurately
+      const gpuRelative = Math.pow(gpuScore / 56, 1.52);
+      const cpuRelative = Math.pow(cpuScore / 76, 1.25);
+
+      // Weighted hardware multiplier (1.00x on reference RTX 3050 + Ryzen 5 5600X)
+      let perfMultiplier = (gpuRelative * game.gpuWeight) + (cpuRelative * game.cpuWeight);
+
+      // Cap CPU-bound ceiling if GPU is ultra-fast (e.g. RTX 4090 paired with an old i5-8400)
+      const maxCpuCeiling = cpuRelative * (game.cpuWeight >= 0.45 ? 1.15 : 1.48);
+      if (perfMultiplier > maxCpuCeiling) {
+        perfMultiplier = (perfMultiplier + maxCpuCeiling) / 2;
+      }
+
+      // Graphics Quality Preset Multiplier (anchored to High = 1.00x)
+      const presetMultiplier = {
+        low: 1.54,
+        medium: 1.24,
+        high: 1.00,
+        ultra: 0.76
+      }[preset];
+
+      // Resolution Scaling Multiplier (anchored to 1080p = 1.00x)
+      const resMultiplier = {
+        "720p": 1.38,
+        "900p": 1.16,
+        "1080p": 1.00,
+        "1440p": 0.69,
+        "4K": 0.41
+      }[resolution];
+
+      // DLSS / FSR / TSR Upscaling Gain (scales stronger at higher resolutions, dampened if heavily CPU-bound)
+      const baseUpscaleGain = {
+        native: 1.00,
+        quality: 1.22,
+        balanced: 1.36,
+        performance: 1.52
+      }[upscaling];
+      const cpuBoundDampener = game.cpuWeight >= 0.55 ? 0.45 : 1.0;
+      const effectiveUpscaleGain = 1 + ((baseUpscaleGain - 1) * cpuBoundDampener);
+
+      // Thermal / Laptop TGP Power Profile Multiplier
+      const thermalMultiplier = {
+        desktop: 1.00,
+        gaming_laptop: 0.90,
+        thin_light: 0.72
+      }[thermal];
+
+      // Single-Channel Memory Bandwidth Penalty
+      let channelMultiplier = 1.00;
+      if (isSingleChannel) {
+        if (isIntegratedGpu) {
+          channelMultiplier = 0.68;
+        } else if (game.cpuWeight >= 0.45 || cpuScore < gpuScore) {
+          channelMultiplier = 0.85;
+        } else {
+          channelMultiplier = 0.91;
+        }
+      }
+
+      // RAM Capacity Penalty
+      let ramMultiplier = 1.00;
+      if (ramGb <= 4) {
+        ramMultiplier = 0.58;
+      } else if (ramGb === 8 && (game.vramHigh >= 8 || game.demand.includes("Heavy") || game.demand.includes("Extreme"))) {
+        ramMultiplier = 0.82;
+      }
+
+      // VRAM Overflow Penalty (when High/Ultra textures + Resolution exceed card's VRAM)
+      const numericVram = isIntegratedGpu ? 2 : parseInt(selectedGpu.vram, 10) || 8;
+      const presetVramOffset = preset === 'ultra' ? 2 : preset === 'high' ? 0 : preset === 'medium' ? -2 : -3;
+      const resVramOffset = resolution === '4K' ? 4 : resolution === '1440p' ? 2 : 0;
+      const estimatedVramNeed = Math.max(2, game.vramHigh + presetVramOffset + resVramOffset - (upscaling !== 'native' ? 1 : 0));
+
+      let vramMultiplier = 1.00;
+      const vramDeficit = estimatedVramNeed - numericVram;
+      if (vramDeficit >= 4) {
+        vramMultiplier = 0.62;
+      } else if (vramDeficit >= 2) {
+        vramMultiplier = 0.80;
+      }
+
+      // Compute final mid-point FPS
+      const rawFps = game.baseHighFps *
+        perfMultiplier *
+        presetMultiplier *
+        resMultiplier *
+        effectiveUpscaleGain *
+        thermalMultiplier *
+        channelMultiplier *
+        ramMultiplier *
+        vramMultiplier;
+
+      const midFps = Math.max(7, Math.round(rawFps));
+      const lowFloorFactor = isHdd ? 0.66 : 0.88;
+      const minFps = Math.max(5, Math.round(midFps * lowFloorFactor));
+      const maxFps = Math.round(midFps * 1.11);
+      const frameTimeMs = (1000 / midFps).toFixed(1);
+
+      // Compute Readiness Score (5 - 99) calibrated to 60 FPS = ~74 score, 120 FPS = ~95 score
+      let readiness = Math.round((midFps / 78) * 75);
+      if (isHdd) readiness -= 6;
+      readiness = Math.max(5, Math.min(99, readiness));
+
+      // Detect Primary Bottleneck
+      let bottleneckType = "balanced";
+      let bottleneckLabel = "Well Balanced";
+
+      if (isSingleChannel && isIntegratedGpu) {
+        bottleneckType = "ram";
+        bottleneckLabel = "Single-Channel iGPU Starve";
+      } else if (vramDeficit >= 2 && !isIntegratedGpu) {
+        bottleneckType = "gpu";
+        bottleneckLabel = `${selectedGpu.vram} VRAM Overflow`;
+      } else if (gpuScore + 14 < cpuScore && gpuScore < 85 && game.gpuWeight >= 0.50) {
+        bottleneckType = "gpu";
+        bottleneckLabel = isIntegratedGpu ? "Integrated GPU Limit" : `${selectedGpu.name.replace(/NVIDIA GeForce |AMD Radeon |Intel /g, '')}`;
+      } else if (isSingleChannel && (game.cpuWeight >= 0.45 || ramGb <= 8)) {
+        bottleneckType = "ram";
+        bottleneckLabel = `Single-Channel ${ramGb}GB RAM`;
+      } else if (ramGb <= 8 && game.vramHigh >= 8) {
+        bottleneckType = "ram";
+        bottleneckLabel = `${ramGb}GB RAM Capacity`;
+      } else if (isHdd && game.vramHigh >= 8) {
+        bottleneckType = "ram";
+        bottleneckLabel = "HDD Asset Streaming";
+      } else if (cpuScore + 15 < gpuScore && cpuScore < 85) {
+        bottleneckType = "cpu";
+        bottleneckLabel = `${selectedCpu.name.replace(/AMD |Intel Core /g, '')}`;
+      } else if (midFps < 45) {
+        bottleneckType = "gpu";
+        bottleneckLabel = `GPU Load (${LABELS.preset[preset]})`;
+      }
+
+      // Determine Verdict Tier & Styling
+      let verdict = {};
+      if (midFps < 30) {
+        verdict = {
+          badge: "Below 30 FPS (Heavy Load)",
+          title: `${minFps}–${maxFps} FPS (Struggling)`,
+          subtitle: isHdd
+            ? "HDD streaming + heavy shaders will cause severe frame drops."
+            : `Drop to Low preset or enable DLSS/FSR Performance at ${resolution}.`,
+          colorHex: "#f43f5e",
+          badgeClass: "bg-rose-500/15 text-rose-400 border-rose-500/30",
+          barClass: "from-rose-500 to-amber-500"
+        };
+      } else if (midFps < 58) {
+        verdict = {
+          badge: isHdd ? "Console-Tier (HDD Stutter)" : "30–55 FPS Console Tier",
+          title: `${minFps}–${maxFps} FPS (${LABELS.preset[preset].split(' ')[0]})`,
+          subtitle: upscaling === 'native'
+            ? "Enabling DLSS/FSR Quality will push this cleanly over 60 FPS."
+            : "Playable frame pacing; lock to 40/45 FPS or drop shadows to Medium.",
+          colorHex: "#f59e0b",
+          badgeClass: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+          barClass: "from-amber-500 to-yellow-400"
+        };
+      } else if (midFps < 105) {
+        verdict = {
+          badge: isHdd ? "60+ FPS (Move to SSD)" : "60+ FPS Sweet Spot",
+          title: `${minFps}–${maxFps} FPS (Smooth)`,
+          subtitle: isHdd
+            ? "Solid average FPS, though mechanical HDD causes shader/level loading hitches."
+            : `Great frame pacing in ${game.name.split('(')[0].trim()} at ${LABELS.preset[preset]}.`,
+          colorHex: "#10b981",
+          badgeClass: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+          barClass: "from-emerald-500 to-cyan-400"
+        };
+      } else {
+        verdict = {
+          badge: isHdd ? "110+ Peak (HDD Hitching)" : "110+ FPS High-Refresh",
+          title: `${minFps}–${maxFps} FPS (Fluid)`,
+          subtitle: isHdd
+            ? "Fast compute/GPU, but installing modern games on an HDD hurts 1% low stutters."
+            : "Effortless performance—maxes out high-refresh displays cleanly.",
+          colorHex: "#06b6d4",
+          badgeClass: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+          barClass: "from-cyan-400 to-emerald-400"
+        };
+      }
+
+      // Generate 3 Tailored Optimization Tweaks
+      const tweaks = [];
+
+      if (upscaling === 'native' && midFps < 75 && !isIntegratedGpu) {
+        tweaks.push(`Switch from Native to DLSS / FSR Quality mode—recovers +20% to +25% FPS in ${game.engine} with near-native sharpness.`);
+      } else if (isSingleChannel) {
+        tweaks.push(
+          isIntegratedGpu
+            ? "Add a matching second RAM stick for Dual-Channel mode—boosts integrated GPU bandwidth and FPS by +30%."
+            : "Upgrade from 1x Single-Channel to 2x Dual-Channel RAM to eliminate CPU memory starvation and stabilize 1% low FPS."
+        );
+      } else if (preset === 'ultra' && midFps < 80) {
+        tweaks.push("Drop Volumetric Fog, Screen Space Reflections & Ray Tracing from Ultra to Medium/High for +28% free FPS.");
+      } else {
+        tweaks.push(`Lock frame rate 3 FPS below your monitor refresh with NVIDIA Reflex / AMD Anti-Lag for lowest input latency in ${game.engine}.`);
+      }
+
+      if (isHdd) {
+        tweaks.push("Move this game folder from your mechanical HDD onto an NVMe/SATA SSD to stop traversal & texture-streaming freezes.");
+      } else if (vramDeficit >= 2) {
+        tweaks.push(`Lower Texture Quality from ${LABELS.preset[preset].split(' ')[0]} to Medium so VRAM usage fits comfortably inside ${selectedGpu.vram}.`);
+      } else if (ramGb <= 8) {
+        tweaks.push("Close browser tabs & background overlays before launching to free ~1.8GB of system memory.");
+      } else {
+        tweaks.push("Verify XMP / EXPO is enabled in BIOS so your dual-channel memory runs at full rated speed.");
+      }
+
+      if (thermal === 'thin_light') {
+        tweaks.push("Elevate the rear of your thin-and-light laptop and select Performance Power Mode to reduce thermal clock throttling.");
+      } else if (isIntegratedGpu) {
+        tweaks.push("Allocate 2GB–4GB UMA Frame Buffer in BIOS and run 720p/900p with FSR Performance.");
+      } else {
+        tweaks.push("Enable Resizable BAR (Smart Access Memory) and Hardware-Accelerated GPU Scheduling in Windows.");
+      }
+
+      const shortCpu = selectedCpu.name.replace(/AMD |Intel Core /g, '');
+      const shortGpu = selectedGpu.name.replace(/NVIDIA GeForce |AMD Radeon |Intel /g, '');
+      const channelShort = isSingleChannel ? "1x Single-Ch" : "2x Dual-Ch";
+      const storageShort = isHdd ? "HDD" : "SSD";
+
+      const metricsObj = {
+        readiness,
+        minFps,
+        maxFps,
+        midFps,
+        frameTimeMs,
+        gameName: game.name,
+        gameEngine: game.engine,
+        preset,
+        upscaling,
+        thermal,
+        resolution,
+        bottleneckType,
+        bottleneckLabel,
+        verdict,
+        tweaks,
+        shortCpu,
+        shortGpu,
+        specsShort: `${shortCpu} + ${shortGpu} (${ramGb}GB ${isSingleChannel ? '1x' : '2x'}, ${storageShort})`,
+        specsText: `${selectedCpu.name} | ${selectedGpu.name} (${selectedGpu.vram}) | ${ramGb}GB ${channelShort} | ${storageShort} | ${LABELS.thermal[thermal]}`
+      };
+
+      latestMetricsCache = metricsObj;
+      return metricsObj;
+    }
+
+    /**
+     * Updates the DOM with calculated telemetry
+     */
+    function renderResults(data) {
+      document.getElementById('resolutionBadge').textContent = `${data.resolution} • ${LABELS.preset[data.preset].split(' ')[0]} • ${LABELS.upscaling[data.upscaling].replace('DLSS/FSR ', '')}`;
+      document.getElementById('scoreNumber').textContent = data.readiness;
+
+      // Update SVG Circular Gauge
+      const circumference = 263.89;
+      const offset = circumference - (data.readiness / 100) * circumference;
+      const gauge = document.getElementById('gaugeCircle');
+      gauge.style.strokeDashoffset = offset;
+      gauge.style.stroke = data.verdict.colorHex;
+
+      // Update Verdict Badges & Titles
+      const badgeEl = document.getElementById('verdictBadge');
+      badgeEl.textContent = data.verdict.badge;
+      badgeEl.className = `inline-block text-xs font-mono font-bold uppercase px-2.5 py-0.5 rounded-md border mb-1.5 ${data.verdict.badgeClass}`;
+
+      document.getElementById('verdictTopBar').className = `absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${data.verdict.barClass}`;
+      document.getElementById('verdictTitle').textContent = data.verdict.title;
+      document.getElementById('verdictSubtitle').textContent = data.verdict.subtitle;
+
+      // Update Telemetry Boxes
+      document.getElementById('fpsStat').textContent = `${data.minFps} – ${data.maxFps} FPS`;
+      const bnEl = document.getElementById('bottleneckStat');
+      bnEl.textContent = data.bottleneckLabel;
+      bnEl.className = `font-mono text-sm sm:text-base font-bold mt-0.5 truncate ${data.bottleneckType === 'balanced' ? 'text-emerald-400' : 'text-amber-400'}`;
+
+      // Update Frame-Time Budget Bar (scale 0ms..35ms -> 0%..100%)
+      const ftVal = parseFloat(data.frameTimeMs);
+      const ftPercent = Math.min(100, Math.max(10, Math.round((ftVal / 35) * 100)));
+      const ftStatEl = document.getElementById('frameTimeStat');
+      const ftBarEl = document.getElementById('frameTimeBar');
+
+      ftStatEl.textContent = `${data.frameTimeMs} ms / frame`;
+      ftBarEl.style.width = `${ftPercent}%`;
+
+      if (ftVal <= 9.0) {
+        ftStatEl.className = "font-bold text-cyan-400";
+        ftBarEl.className = "h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full transition-all duration-500";
+      } else if (ftVal <= 17.5) {
+        ftStatEl.className = "font-bold text-emerald-400";
+        ftBarEl.className = "h-full bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full transition-all duration-500";
+      } else if (ftVal <= 33.3) {
+        ftStatEl.className = "font-bold text-amber-400";
+        ftBarEl.className = "h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-500";
+      } else {
+        ftStatEl.className = "font-bold text-rose-400";
+        ftBarEl.className = "h-full bg-gradient-to-r from-rose-500 to-orange-500 rounded-full transition-all duration-500";
+      }
+
+      // Update Tweaks List
+      const tweaksList = document.getElementById('tweaksList');
+      // Update Smart Tier-Matched Upgrade Recommendation Card
+      const aff = getSmartUpgradeRecommendation(
+        data.bottleneckType,
+        selectedGpu,
+        selectedCpu,
+        parseInt(document.querySelector('input[name="ram"]:checked').value, 10),
+        document.querySelector('input[name="ramChannel"]:checked').value === 'single',
+        document.querySelector('input[name="storageType"]:checked').value === 'hdd'
+      );
+      document.getElementById('upgradeTitle').textContent = aff.title;
+      document.getElementById('upgradeDesc').textContent = aff.desc;
+      document.getElementById('upgradeBtnText').textContent = aff.btnText;
+      document.getElementById('upgradeLink').href = aff.url;
+
+      // Build viral share text
+      const siteUrl = window.location.href.startsWith('http') ? window.location.href : 'https://lowspec-check.pages.dev';
+      latestResultSummary = [
+        `🖥️ PC Reality Check: ${data.readiness}/100 — [${data.verdict.badge.toUpperCase()}]`,
+        `🎮 Game: ${data.gameName} @ ${data.resolution} ${LABELS.preset[data.preset]} (${LABELS.upscaling[data.upscaling]})`,
+        `📊 Est. FPS: ${data.minFps}–${data.maxFps} FPS (${data.frameTimeMs}ms)`,
+        `⚠️ Bottleneck: ${data.bottleneckLabel}`,
+        `🔧 Rig: ${data.specsText}`,
+        `Test your PC 👉 ${siteUrl}`
+      ].join('\n');
+    }
+
+    /**
+     * Generates and downloads a sleek dark-mode PNG Result Card for Discord / Reddit / WhatsApp
+     */
+    function downloadPngCard() {
+      const data = latestMetricsCache || calculateMetrics();
+      const canvas = document.createElement('canvas');
+      canvas.width = 960;
+      canvas.height = 520;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#0b0f19';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Subtle Grid
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.06)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 32) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 32) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // Outer Card Container
+      ctx.fillStyle = '#111827';
+      ctx.strokeStyle = '#1f2937';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(36, 36, 888, 448, 24);
+      ctx.fill();
+      ctx.stroke();
+
+      // Top Verdict Accent Bar
+      ctx.fillStyle = data.verdict.colorHex;
+      ctx.beginPath();
+      ctx.roundRect(36, 36, 888, 10, [24, 24, 0, 0]);
+      ctx.fill();
+
+      // Brand Header
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 24px Inter, sans-serif';
+      ctx.fillText('LOWSPEC.CHECK', 72, 92);
+      ctx.fillStyle = '#22d3ee';
+      ctx.font = '700 14px monospace';
+      ctx.fillText('REAL-WORLD BENCHMARK TELEMETRY', 285, 91);
+
+      // Settings Pill Top Right
+      ctx.fillStyle = '#1f2937';
+      ctx.beginPath();
+      ctx.roundRect(620, 68, 268, 34, 8);
+      ctx.fill();
+      ctx.fillStyle = '#67e8f9';
+      ctx.font = '700 14px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${data.resolution} • ${LABELS.preset[data.preset].split(' ')[0].toUpperCase()} • ${LABELS.upscaling[data.upscaling].replace('DLSS/FSR ', '').toUpperCase()}`, 754, 90);
+      ctx.textAlign = 'left';
+
+      // Game Title
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '700 13px monospace';
+      ctx.fillText('BENCHMARK TARGET', 72, 145);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 30px Inter, sans-serif';
+      const cleanGameTitle = data.gameName.length > 42 ? data.gameName.slice(0, 40) + '…' : data.gameName;
+      ctx.fillText(cleanGameTitle, 72, 182);
+
+      // Big FPS Display Box
+      ctx.fillStyle = '#0b0f19';
+      ctx.strokeStyle = '#1f2937';
+      ctx.beginPath();
+      ctx.roundRect(72, 210, 420, 130, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = data.verdict.colorHex;
+      ctx.font = '800 14px monospace';
+      ctx.fillText(data.verdict.badge.toUpperCase(), 96, 244);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 44px monospace';
+      ctx.fillText(`${data.minFps}–${data.maxFps} FPS`, 96, 298);
+
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '600 15px monospace';
+      ctx.fillText(`Avg Frame-Time: ${data.frameTimeMs} ms`, 96, 326);
+
+      // Score & Bottleneck Box
+      ctx.fillStyle = '#0b0f19';
+      ctx.beginPath();
+      ctx.roundRect(514, 210, 374, 130, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '700 13px monospace';
+      ctx.fillText('READINESS SCORE', 538, 244);
+      ctx.fillStyle = data.verdict.colorHex;
+      ctx.font = '800 44px monospace';
+      ctx.fillText(`${data.readiness}/100`, 538, 298);
+
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = '700 14px monospace';
+      ctx.fillText(`Limit: ${data.bottleneckLabel}`, 538, 326);
+
+      // Hardware Spec Footer Bar
+      ctx.fillStyle = '#0b0f19';
+      ctx.beginPath();
+      ctx.roundRect(72, 362, 816, 86, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '700 12px monospace';
+      ctx.fillText('SYSTEM HARDWARE CONFIGURATION', 94, 390);
+      ctx.fillStyle = '#e5e7eb';
+      ctx.font = '600 15px monospace';
+      const specLine = data.specsText.length > 78 ? data.specsText.slice(0, 76) + '…' : data.specsText;
+      ctx.fillText(specLine, 94, 422);
+
+      // Trigger Download
+      const link = document.createElement('a');
+      link.download = `lowspec-check-${data.gameName.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24)}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast("PNG Benchmark Card downloaded!");
+    }
+
+    /**
+     * Save up to 2 builds in localStorage for side-by-side comparison
+     */
+    function saveCurrentRig() {
+      const current = calculateMetrics();
+      let saved = [];
+      try {
+        saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      } catch (e) {
+        saved = [];
+      }
+
+      const shortGame = current.gameName.split('(')[0].trim();
+      const entry = {
+        id: Date.now(),
+        label: saved.length === 0 ? "Rig #1" : "Rig #2",
+        specs: current.specsShort,
+        fps: `${current.minFps}–${current.maxFps} FPS`,
+        score: current.readiness,
+        scene: `${shortGame} • ${current.resolution} ${LABELS.preset[current.preset].split(' ')[0]}`,
+        bottleneck: current.bottleneckLabel
+      };
+
+      if (saved.length >= 2) {
+        saved.shift(); // Keep latest 2
+        saved[0].label = "Rig #1";
+        entry.label = "Rig #2";
+      }
+      saved.push(entry);
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      } catch (e) {}
+
+      renderSavedRigs();
+      showToast(`${entry.label} saved! Compare side-by-side below.`);
+    }
+
+    function clearSavedRigs() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {}
+      renderSavedRigs();
+      showToast("Saved rigs cleared.");
+    }
+
+    function renderSavedRigs() {
+      const container = document.getElementById('savedRigsContainer');
+      const clearBtn = document.getElementById('clearRigsBtn');
+      let saved = [];
+      try {
+        saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      } catch (e) {
+        saved = [];
+      }
+
+      if (saved.length === 0) {
+        clearBtn.classList.add('hidden');
+        container.innerHTML = `<p class="text-xs text-gray-500">Save your current build and a friend's laptop (or an upgrade target) to compare FPS side-by-side.</p>`;
+        return;
+      }
+
+      clearBtn.classList.remove('hidden');
+      container.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          ${saved.map(rig => `
+            <div class="rounded-xl bg-gray-950/80 border border-gray-800 p-3">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[11px] font-mono font-bold text-cyan-400">${rig.label}</span>
+                <span class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-gray-800 text-gray-300">${rig.score}/100</span>
+              </div>
+              <div class="text-sm font-extrabold text-white">${rig.fps}</div>
+              <div class="text-[11px] text-gray-400 truncate mt-0.5">${rig.specs}</div>
+              <div class="text-[10px] font-mono text-gray-500 mt-1">${rig.scene} • ${rig.bottleneck}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    /**
+     * Button trigger with quick simulated hardware scan effect
+     */
+    function runRealityCheck() {
+      const btn = document.getElementById('runCheckBtn');
+      const label = document.getElementById('btnLabel');
+      const overlay = document.getElementById('scanOverlay');
+
+      label.textContent = "ANALYZING FRAME BUDGET...";
+      overlay.classList.remove('hidden');
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const result = calculateMetrics();
+        renderResults(result);
+
+        label.textContent = "RUN REALITY CHECK";
+        overlay.classList.add('hidden');
+        btn.disabled = false;
+
+        if (window.innerWidth < 1024) {
+          document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 320);
+    }
+
+    /**
+     * Copy shareable result card using iFrame-safe execCommand fallback
+     */
+    function copyShareResult() {
+      if (!latestResultSummary) {
+        renderResults(calculateMetrics());
+      }
+      const textarea = document.createElement('textarea');
+      textarea.value = latestResultSummary;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast("Rig report copied! Paste it in Discord or Reddit.");
+      } catch (err) {
+        showToast("Could not copy automatically—try again.");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Populate initial CPU, GPU and Game inputs
+      document.getElementById('cpuSearchInput').value = selectedCpu.name;
+      document.getElementById('gpuSearchInput').value = selectedGpu.name;
+      document.getElementById('gameSearchInput').value = selectedGame.name;
+      renderHwDropdown('cpu');
+      renderHwDropdown('gpu');
+      renderHwDropdown('game');
+
+      renderResults(calculateMetrics());
+      renderSavedRigs();
+
+      document.querySelectorAll('input[type="radio"], select').forEach(el => {
+        el.addEventListener('change', () => {
+          renderResults(calculateMetrics());
+        });
+      });
+    });
+  </script>
+</body>
+</html>
