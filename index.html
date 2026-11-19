@@ -1732,82 +1732,86 @@
      * ZERO-RELOAD URL & SEO METADATA SYNC (history.pushState + Canonical + Title)
      * ============================================================================
      */
-    function syncUrlAndSeo(skipPush = false) {
-      const params = new URLSearchParams();
-      let pageTitle = "";
-      let pageDesc = "";
+  function syncUrlAndSeo(skipPush = false) {
+  const staticTitle = "LowSpecCheck — Can Your PC Run It? (Low-Spec Reality Check)";
+  const staticDesc = "Calculate real-world FPS, frame-time budgets, and CPU/GPU bottlenecks across 100+ processors, 105+ graphics cards, and 65+ games & 3D viewports.";
+  const baseUrl = "https://lowspeccheck.vercel.app/";
 
-      if (activeTab === "cpu") {
-        params.set("tab", "cpu");
-        params.set("cpu1", battleCpu1.id);
-        params.set("cpu2", battleCpu2.id);
+  const metaDesc = document.querySelector('meta[name="description"]');
+  const canonicalEl = document.querySelector('link[rel="canonical"]');
 
-        const short1 = battleCpu1.name.replace(/AMD |Intel Core /g, "");
-        const short2 = battleCpu2.name.replace(/AMD |Intel Core /g, "");
-        pageTitle = `${short1} vs ${short2} — Gaming FPS, Single-Core & Multi-Core Specs | LowSpecCheck`;
-        pageDesc = `Compare ${battleCpu1.name} (${battleCpu1.cores}) vs ${battleCpu2.name} (${battleCpu2.cores}). Side-by-side single-core gaming speed, multi-core productivity, L3 cache, boost clock, and socket specs.`;
-      } else if (activeTab === "gpu") {
-        params.set("tab", "gpu");
-        params.set("gpu1", battleGpu1.id);
-        params.set("gpu2", battleGpu2.id);
+  const currentParams = new URLSearchParams(window.location.search);
+  const hasIncomingQuery = Array.from(currentParams.keys()).length > 0;
 
-        const short1 = battleGpu1.name.replace(/NVIDIA GeForce |AMD Radeon |Intel /g, "");
-        const short2 = battleGpu2.name.replace(/NVIDIA GeForce |AMD Radeon |Intel /g, "");
-        pageTitle = `${short1} vs ${short2} — Specs, Ray Tracing & FPS Comparison | LowSpecCheck`;
-        pageDesc = `Compare ${battleGpu1.name} (${battleGpu1.vram}) vs ${battleGpu2.name} (${battleGpu2.vram}). Side-by-side CUDA/Stream cores, RT cores, memory bandwidth, TDP, and 1080p/1440p/4K gaming FPS.`;
-      } else {
-        params.set("cpu", selectedCpu.id);
-        params.set("gpu", selectedGpu.id);
-        params.set("game", selectedGame.id);
-        if (selectedResolution !== "1080p") params.set("res", selectedResolution);
-        if (selectedPreset !== "high") params.set("preset", selectedPreset);
-        if (selectedUpscaling !== "native") params.set("upscale", selectedUpscaling);
-        if (isolatedMode) params.set("solo", isolatedMode);
+  // Keep the root URL and static title untouched on initial load when no query params were passed
+  if (activeTab === "fps" && !isolatedMode && skipPush && !hasIncomingQuery) {
+    document.title = staticTitle;
+    if (metaDesc) metaDesc.setAttribute("content", staticDesc);
+    if (canonicalEl) canonicalEl.setAttribute("href", baseUrl);
+    return;
+  }
 
-        const shortGame = selectedGame.name.split("(")[0].trim();
-        const shortGpu = selectedGpu.name.replace(/NVIDIA GeForce |AMD Radeon |Intel /g, "");
-        const shortCpu = selectedCpu.name.replace(/AMD |Intel Core /g, "");
+  const params = new URLSearchParams();
+  let pageTitle = staticTitle;
+  let pageDesc = staticDesc;
 
-        pageTitle = `Can ${shortGpu} + ${shortCpu} Run ${shortGame}? FPS & Bottleneck Test | LowSpecCheck`;
-        pageDesc = `Real-world ${shortGame} FPS, frame-time budget, and bottleneck analysis on ${selectedCpu.name} and ${selectedGpu.name} (${selectedGpu.vram}) at ${selectedResolution} ${LABELS.preset[selectedPreset]}.`;
+  if (activeTab === "cpu") {
+    params.set("tab", "cpu");
+    params.set("cpu1", battleCpu1.id);
+    params.set("cpu2", battleCpu2.id);
 
-        if (isolatedMode === "gpu") {
-          pageTitle = `${selectedGpu.name} Gaming Benchmark & FPS Calculator | LowSpecCheck`;
-          pageDesc = `Isolated graphics card benchmark profile for ${selectedGpu.name} (${selectedGpu.vram}). Test 1080p, 1440p & 4K FPS across 65+ games.`;
-        } else if (isolatedMode === "cpu") {
-          pageTitle = `${selectedCpu.name} Gaming Benchmark & Bottleneck Check | LowSpecCheck`;
-          pageDesc = `Isolated processor benchmark profile for ${selectedCpu.name} (${selectedCpu.cores}). Check esports & AAA gaming FPS limits.`;
-        }
-      }
+    const short1 = battleCpu1.name.replace(/AMD |Intel Core /g, "");
+    const short2 = battleCpu2.name.replace(/AMD |Intel Core /g, "");
+    pageTitle = `${short1} vs ${short2} — Gaming FPS, Single-Core & Multi-Core Specs | LowSpecCheck`;
+    pageDesc = `Compare ${battleCpu1.name} (${battleCpu1.cores}) vs ${battleCpu2.name} (${battleCpu2.cores}). Side-by-side single-core gaming speed, multi-core productivity, L3 cache, boost clock, and socket specs.`;
+  } else if (activeTab === "gpu") {
+    params.set("tab", "gpu");
+    params.set("gpu1", battleGpu1.id);
+    params.set("gpu2", battleGpu2.id);
 
-      const queryString = params.toString();
-      const relativeUrl = `${window.location.pathname}?${queryString}`;
-      const canonicalFullUrl = `https://lowspeccheck.vercel.app/?${queryString}`;
+    const short1 = battleGpu1.name.replace(/NVIDIA GeForce |AMD Radeon |Intel /g, "");
+    const short2 = battleGpu2.name.replace(/NVIDIA GeForce |AMD Radeon |Intel /g, "");
+    pageTitle = `${short1} vs ${short2} — Specs, Ray Tracing & FPS Comparison | LowSpecCheck`;
+    pageDesc = `Compare ${battleGpu1.name} (${battleGpu1.vram}) vs ${battleGpu2.name} (${battleGpu2.vram}). Side-by-side CUDA/Stream cores, RT cores, memory bandwidth, TDP, and 1080p/1440p/4K gaming FPS.`;
+  } else {
+    params.set("cpu", selectedCpu.id);
+    params.set("gpu", selectedGpu.id);
+    params.set("game", selectedGame.id);
+    if (selectedResolution !== "1080p") params.set("res", selectedResolution);
+    if (selectedPreset !== "high") params.set("preset", selectedPreset);
+    if (selectedUpscaling !== "native") params.set("upscale", selectedUpscaling);
+    if (isolatedMode) params.set("solo", isolatedMode);
 
-      if (!skipPush && window.history && window.history.pushState) {
-        try {
-          window.history.pushState({ tab: activeTab }, "", relativeUrl);
-        } catch (e) {}
-      }
+    const shortGame = selectedGame.name.split("(")[0].trim();
+    const shortGpu = selectedGpu.name.replace(/NVIDIA GeForce |AMD Radeon |Intel /g, "");
+    const shortCpu = selectedCpu.name.replace(/AMD |Intel Core /g, "");
 
-      document.title = pageTitle;
-
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (!metaDesc) {
-        metaDesc = document.createElement("meta");
-        metaDesc.setAttribute("name", "description");
-        document.head.appendChild(metaDesc);
-      }
-      metaDesc.setAttribute("content", pageDesc);
-
-      let canonicalEl = document.querySelector('link[rel="canonical"]');
-      if (!canonicalEl) {
-        canonicalEl = document.createElement("link");
-        canonicalEl.setAttribute("rel", "canonical");
-        document.head.appendChild(canonicalEl);
-      }
-      canonicalEl.setAttribute("href", canonicalFullUrl);
+    if (isolatedMode === "gpu") {
+      pageTitle = `${selectedGpu.name} Gaming Benchmark & FPS Calculator | LowSpecCheck`;
+      pageDesc = `Isolated graphics card benchmark profile for ${selectedGpu.name} (${selectedGpu.vram}). Test 1080p, 1440p & 4K FPS across 65+ games.`;
+    } else if (isolatedMode === "cpu") {
+      pageTitle = `${selectedCpu.name} Gaming Benchmark & Bottleneck Check | LowSpecCheck`;
+      pageDesc = `Isolated processor benchmark profile for ${selectedCpu.name} (${selectedCpu.cores}). Check esports & AAA gaming FPS limits.`;
+    } else {
+      pageTitle = `Can ${shortGpu} + ${shortCpu} Run ${shortGame}? FPS & Bottleneck Test | LowSpecCheck`;
+      pageDesc = `Real-world ${shortGame} FPS, frame-time budget, and bottleneck analysis on ${selectedCpu.name} and ${selectedGpu.name} (${selectedGpu.vram}) at ${selectedResolution} ${LABELS.preset[selectedPreset]}.`;
     }
+  }
+
+  const queryString = params.toString();
+  const targetUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+  const canonicalFullUrl = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+  if (!skipPush && window.history && window.history.pushState) {
+    try {
+      window.history.pushState({ tab: activeTab }, "", targetUrl);
+    } catch (e) {}
+  }
+
+  document.title = pageTitle;
+  if (metaDesc) metaDesc.setAttribute("content", pageDesc);
+  if (canonicalEl) canonicalEl.setAttribute("href", canonicalFullUrl);
+}
 
     function applyPresetUrl(event, cpuId, gpuId, gameId) {
       if (event) event.preventDefault();
